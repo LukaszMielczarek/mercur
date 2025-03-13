@@ -2,19 +2,34 @@ import { unlessBaseUrl } from '#/shared/infra/http/utils'
 
 import { MiddlewareRoute, authenticate } from '@medusajs/framework'
 
+import { vendorCampaignsMiddlewares } from './campaigns/middlewares'
 import { vendorCors } from './cors'
+import { vendorCustomerGroupsMiddlewares } from './customer-groups/middlewares'
+import { vendorCustomersMiddlewares } from './customers/middlewares'
+import { vendorFulfillmentProvidersMiddlewares } from './fulfillment-providers/middlewares'
 import { vendorFulfillmentSetsMiddlewares } from './fulfillment-sets/middlewares'
 import { vendorInventoryItemsMiddlewares } from './inventory-items/middlewares'
 import { vendorInvitesMiddlewares } from './invites/middlewares'
+import { vendorMeMiddlewares } from './me/middlewares'
+import { vendorMembersMiddlewares } from './members/middlewares'
 import { vendorOrderMiddlewares } from './orders/middlewares'
 import { vendorPayoutAccountMiddlewares } from './payout-account/middlewares'
 import { vendorPayoutMiddlewares } from './payouts/middlewares'
+import { vendorPriceListsMiddlewares } from './price-lists/middlewares'
+import { vendorProductTagsMiddlewares } from './product-tags/middlewares'
+import { vendorProductTypesMiddlewares } from './product-types/middlewares'
 import { vendorProductsMiddlewares } from './products/middlewares'
+import { vendorPromotionsMiddlewares } from './promotions/middlewares'
 import { vendorRequestsMiddlewares } from './requests/middlewares'
+import { vendorReservationsMiddlewares } from './reservations/middlewares'
 import { vendorReturnRequestsMiddlewares } from './return-request/middlewares'
+import { vendorSalesChannelMiddlewares } from './sales-channels/middlewares'
 import { vendorSellersMiddlewares } from './sellers/middlewares'
 import { vendorShippingOptionsMiddlewares } from './shipping-options/middlewares'
+import { vendorStatisticsMiddlewares } from './statistics/middlewares'
 import { vendorStockLocationsMiddlewares } from './stock-locations/middlewares'
+import { vendorStoresMiddlewares } from './stores/middlewares'
+import { vendorUploadMiddlewares } from './uploads/middlewares'
 
 export const vendorMiddlewares: MiddlewareRoute[] = [
   {
@@ -51,7 +66,9 @@ export const vendorMiddlewares: MiddlewareRoute[] = [
       )
     ]
   },
+  ...vendorMeMiddlewares,
   ...vendorSellersMiddlewares,
+  ...vendorMembersMiddlewares,
   ...vendorProductsMiddlewares,
   ...vendorInvitesMiddlewares,
   ...vendorFulfillmentSetsMiddlewares,
@@ -63,5 +80,19 @@ export const vendorMiddlewares: MiddlewareRoute[] = [
   ...vendorOrderMiddlewares,
   ...vendorReturnRequestsMiddlewares,
   ...vendorInventoryItemsMiddlewares,
-  ...vendorRequestsMiddlewares
+  ...vendorRequestsMiddlewares,
+  ...vendorSalesChannelMiddlewares,
+  ...vendorCustomersMiddlewares,
+  ...vendorCustomerGroupsMiddlewares,
+  ...vendorStoresMiddlewares,
+  ...vendorProductTagsMiddlewares,
+  ...vendorProductTypesMiddlewares,
+  ...vendorUploadMiddlewares,
+  ...vendorPromotionsMiddlewares,
+  ...vendorReservationsMiddlewares,
+  ...vendorPriceListsMiddlewares,
+  ...vendorPromotionsMiddlewares,
+  ...vendorCampaignsMiddlewares,
+  ...vendorStatisticsMiddlewares,
+  ...vendorFulfillmentProvidersMiddlewares
 ]

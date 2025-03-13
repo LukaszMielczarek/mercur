@@ -10,11 +10,13 @@ import {
   filterBySellerId
 } from '../../../shared/infra/http/middlewares'
 import {
+  vendorOnboardingQueryConfig,
   vendorReviewQueryConfig,
   vendorSellerQueryConfig
 } from './query-config'
 import {
   VendorCreateSeller,
+  VendorGetOnboardingParams,
   VendorGetReviewsParams,
   VendorGetSellerParams,
   VendorUpdateReview,
@@ -55,6 +57,16 @@ export const vendorSellersMiddlewares: MiddlewareRoute[] = [
     ]
   },
   {
+    method: ['GET', 'POST'],
+    matcher: '/vendor/sellers/me/onboarding',
+    middlewares: [
+      validateAndTransformQuery(
+        VendorGetOnboardingParams,
+        vendorOnboardingQueryConfig.retrieve
+      )
+    ]
+  },
+  {
     method: ['GET'],
     matcher: '/vendor/sellers/me/reviews',
     middlewares: [
@@ -74,7 +86,8 @@ export const vendorSellersMiddlewares: MiddlewareRoute[] = [
         vendorReviewQueryConfig.retrieve
       ),
       checkResourceOwnershipByResourceId({
-        entryPoint: sellerReview.entryPoint
+        entryPoint: sellerReview.entryPoint,
+        filterField: 'review_id'
       })
     ]
   },
@@ -88,7 +101,8 @@ export const vendorSellersMiddlewares: MiddlewareRoute[] = [
       ),
       validateAndTransformBody(VendorUpdateReview),
       checkResourceOwnershipByResourceId({
-        entryPoint: sellerReview.entryPoint
+        entryPoint: sellerReview.entryPoint,
+        filterField: 'review_id'
       })
     ]
   }

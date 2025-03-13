@@ -29,7 +29,8 @@ export const VendorGetProductParams = createFindParams({
  *     items:
  *       type: string
  */
-const CreateProductOption = z.object({
+export type CreateProductOptionType = z.infer<typeof CreateProductOption>
+export const CreateProductOption = z.object({
   title: z.string(),
   values: z.array(z.string())
 })
@@ -65,6 +66,7 @@ export const VendorAssignBrandName = z.object({
  *     items:
  *       type: string
  */
+export type UpdateProductOptionType = z.infer<typeof UpdateProductOption>
 export const UpdateProductOption = z.object({
   id: z.string().optional(),
   title: z.string().optional(),
@@ -222,7 +224,8 @@ const UpdateVariantPrice = z.object({
  *         required_quantity:
  *           type: number
  */
-const CreateProductVariant = z
+export type CreateProductVariantType = z.infer<typeof CreateProductVariant>
+export const CreateProductVariant = z
   .object({
     title: z.string(),
     sku: z.string().optional(),
@@ -231,8 +234,8 @@ const CreateProductVariant = z
     barcode: z.string().optional(),
     hs_code: z.string().optional(),
     mid_code: z.string().optional(),
-    allow_backorder: z.boolean().optional().default(false),
-    manage_inventory: z.boolean().optional().default(true),
+    allow_backorder: z.literal(false).optional().default(false),
+    manage_inventory: z.literal(true).optional().default(true),
     variant_rank: z.number().optional(),
     weight: z.number().optional(),
     length: z.number().optional(),
@@ -336,7 +339,8 @@ const CreateProductVariant = z
  *     additionalProperties:
  *       type: string
  */
-const UpdateProductVariant = z
+export type UpdateProductVariantType = z.infer<typeof UpdateProductVariant>
+export const UpdateProductVariant = z
   .object({
     id: z.string().optional(),
     title: z.string().optional(),
@@ -497,8 +501,8 @@ export const VendorCreateProduct = z
     handle: z.string().optional(),
     status: z.nativeEnum(ProductStatus).optional().default(ProductStatus.DRAFT),
     external_id: z.string().optional(),
-    type_id: z.string().optional(),
-    collection_id: z.string().optional(),
+    type_id: z.string().nullable(),
+    collection_id: z.string().nullable(),
     categories: z.array(IdAssociation).max(1).optional(),
     tags: z.array(IdAssociation).optional(),
     options: z.array(CreateProductOption).optional(),
@@ -512,7 +516,8 @@ export const VendorCreateProduct = z
     origin_country: z.string().optional(),
     material: z.string().optional(),
     metadata: z.record(z.unknown()).optional(),
-    sales_channels: z.array(z.object({ id: z.string() })).optional()
+    sales_channels: z.array(z.object({ id: z.string() })).optional(),
+    brand_name: z.string().optional()
   })
   .strict()
 
