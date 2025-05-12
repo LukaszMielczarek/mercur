@@ -6,6 +6,8 @@ import {
   updateStockLocationsWorkflow
 } from '@medusajs/medusa/core-flows'
 
+import { VendorUpdateStockLocationType } from '../validators'
+
 /**
  * @oas [get] /vendor/stock-locations/{id}
  * operationId: "VendorGetStockLocation"
@@ -51,7 +53,7 @@ export const GET = async (
   } = await query.graph(
     {
       entity: 'stock_location',
-      fields: req.remoteQueryConfig.fields,
+      fields: req.queryConfig.fields,
       filters: {
         id: req.params.id
       }
@@ -104,7 +106,7 @@ export const GET = async (
  *   - cookie_auth: []
  */
 export const POST = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<VendorUpdateStockLocationType>,
   res: MedusaResponse
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
@@ -123,7 +125,7 @@ export const POST = async (
   } = await query.graph(
     {
       entity: 'stock_location',
-      fields: req.remoteQueryConfig.fields,
+      fields: req.queryConfig.fields,
       filters: {
         id: req.params.id
       }
@@ -136,6 +138,42 @@ export const POST = async (
   })
 }
 
+/**
+ * @oas [delete] /vendor/stock-locations/{id}
+ * operationId: "VendorDeleteStockLocationById"
+ * summary: "Delete stock location"
+ * description: "Deletes stock location by id for the authenticated vendor."
+ * x-authenticated: true
+ * parameters:
+ *   - in: path
+ *     name: id
+ *     required: true
+ *     description: The ID of the stock location.
+ *     schema:
+ *       type: string
+ * responses:
+ *   "200":
+ *     description: OK
+ *     content:
+ *       application/json:
+ *         schema:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               description: The ID of the deleted resource
+ *             object:
+ *               type: string
+ *               description: The type of the object that was deleted
+ *             deleted:
+ *               type: boolean
+ *               description: Whether or not the items were deleted
+ * tags:
+ *   - Stock Location
+ * security:
+ *   - api_token: []
+ *   - cookie_auth: []
+ */
 export const DELETE = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse

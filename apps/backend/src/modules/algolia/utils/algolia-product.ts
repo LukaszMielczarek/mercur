@@ -1,10 +1,62 @@
 import { z } from 'zod'
 
 import { MedusaContainer } from '@medusajs/framework'
-import { ContainerRegistrationKeys } from '@medusajs/framework/utils'
+import {
+  ContainerRegistrationKeys,
+  arrayDifference
+} from '@medusajs/framework/utils'
 
+import sellerProduct from '../../../links/seller-product'
 import { getAvgRating } from '../../reviews/utils'
-import { AlgoliaProductValidator } from '../types'
+import { AlgoliaProductValidator, AlgoliaVariantValidator } from '../types'
+
+async function selectProductSupportedCountries(
+  container: MedusaContainer,
+  product_id: string
+) {
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+
+  const {
+    data: [sellerProductRelation]
+  } = await query.graph({
+    entity: sellerProduct.entryPoint,
+    fields: ['seller.service_zones.geo_zones.*'],
+    filters: {
+      product_id
+    }
+  })
+
+  return sellerProductRelation
+    ? sellerProductRelation.seller.service_zones.flatMap((sz) =>
+        sz.geo_zones
+          .filter((gz) => gz.type === 'country')
+          .map((gz) => gz.country_code)
+      )
+    : []
+}
+
+export async function filterProductsByStatus(
+  container: MedusaContainer,
+  ids: string[] = []
+) {
+  const query = container.resolve(ContainerRegistrationKeys.QUERY)
+
+  const { data: products } = await query.graph({
+    entity: 'product',
+    fields: ['id', 'status'],
+    filters: {
+      id: ids
+    }
+  })
+
+  const published = products.filter((p) => p.status === 'published')
+  const other = arrayDifference(products, published)
+
+  return {
+    published: published.map((p) => p.id),
+    other: other.map((p) => p.id)
+  }
+}
 
 export async function findAndTransformAlgoliaProducts(
   container: MedusaContainer,
@@ -26,13 +78,15 @@ export async function findAndTransformAlgoliaProducts(
       'variants.prices.*',
       'brand.name',
       'options.*',
-      'options.values.*'
+      'options.values.*',
+      'images.*'
     ],
     filters: ids.length
       ? {
-          id: ids
+          id: ids,
+          status: 'published'
         }
-      : {}
+      : { status: 'published' }
   })
 
   for (const product of products) {
@@ -41,6 +95,11 @@ export async function findAndTransformAlgoliaProducts(
       'product',
       product.id
     )
+    product.supported_countries = await selectProductSupportedCountries(
+      container,
+      product.id
+    )
+
     product.options = product.options
       ?.map((option) => {
         return option.values.map((value) => {
@@ -50,18 +109,13 @@ export async function findAndTransformAlgoliaProducts(
         })
       })
       .flat()
+    product.variants = z.array(AlgoliaVariantValidator).parse(product.variants)
     product.variants = product.variants
       ?.map((variant) => {
-        return variant.options?.reduce(
-          (entry, item) => {
-            entry[item.option.title.toLowerCase()] = item.value
-            return entry
-          },
-          {
-            title: variant.title,
-            prices: variant.prices
-          }
-        )
+        return variant.options?.reduce((entry, item) => {
+          entry[item.option.title.toLowerCase()] = item.value
+          return entry
+        }, variant)
       })
       .flat()
   }

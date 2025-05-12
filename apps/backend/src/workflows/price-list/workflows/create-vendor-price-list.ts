@@ -16,24 +16,24 @@ import { validateVendorPriceListPricesStep } from '../steps'
 export const createVendorPriceListWorkflow = createWorkflow(
   'create-vendor-price-list',
   function ({
-    price_list_data,
+    price_lists_data,
     seller_id
   }: {
-    price_list_data: CreatePriceListWorkflowInputDTO
+    price_lists_data: CreatePriceListWorkflowInputDTO
     seller_id: string
   }) {
     validateVendorPriceListPricesStep({
-      prices: price_list_data.prices,
+      prices: price_lists_data.prices,
       seller_id
     })
 
     const result = createPriceListsWorkflow.runAsStep({
       input: {
-        price_lists_data: [price_list_data]
+        price_lists_data: [price_lists_data]
       }
     })
 
-    const links = transform(result, (result) => {
+    const links = transform({ result, seller_id }, ({ result, seller_id }) => {
       return result.map((list) => {
         return {
           [SELLER_MODULE]: {

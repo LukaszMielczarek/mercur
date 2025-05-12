@@ -42,9 +42,11 @@ export const GET = async (
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
-  const { data: price_list } = await query.graph({
+  const {
+    data: [price_list]
+  } = await query.graph({
     entity: 'price_list',
-    fields: req.remoteQueryConfig.fields,
+    fields: req.queryConfig.fields,
     filters: {
       id: req.params.id
     }
@@ -104,9 +106,11 @@ export const POST = async (
     input: { price_lists_data: [{ ...req.validatedBody, id }] }
   })
 
-  const { data: price_list } = await query.graph({
+  const {
+    data: [price_list]
+  } = await query.graph({
     entity: 'price_list',
-    fields: req.remoteQueryConfig.fields,
+    fields: req.queryConfig.fields,
     filters: {
       id: req.params.id
     }

@@ -9,6 +9,82 @@
  * ---------------------------------------------------------------
  */
 
+/** The details of the items to add to a draft order. */
+export interface AdminAddDraftOrderItems {
+  /** The items to add to the draft order. */
+  items?: {
+    /**
+     * quantity
+     * The item's quantity.
+     */
+    quantity: number;
+    /**
+     * variant_id
+     * The ID of the variant to add to the draft order.
+     */
+    variant_id?: string;
+    /**
+     * title
+     * The item's title.
+     */
+    title?: string;
+    /**
+     * unit_price
+     * The item's unit price.
+     */
+    unit_price?: number;
+    /**
+     * compare_at_unit_price
+     * The original price of the item before a promotion or sale.
+     */
+    compare_at_unit_price?: number;
+    /**
+     * internal_note
+     * A note viewed only by admin users about the item.
+     */
+    internal_note?: string;
+    /**
+     * allow_backorder
+     * Whether the item can be purchased if it's out of stock.
+     */
+    allow_backorder?: boolean;
+    /** The item's metadata, can hold custom key-value pairs. */
+    metadata?: object;
+  }[];
+}
+
+/** The details of the promotions to add to a draft order. */
+export interface AdminAddDraftOrderPromotions {
+  /** The list promotion codes to add to the draft order. */
+  promo_codes: string[];
+}
+
+/** The details of the shipping method to add to a draft order. */
+export interface AdminAddDraftOrderShippingMethod {
+  /**
+   * shipping_option_id
+   * The ID of the shipping option that this method is created from.
+   */
+  shipping_option_id: string;
+  /**
+   * custom_amount
+   * A custom amount to be charged for this shipping method. If not provided, the shipping option's amount will be used.
+   */
+  custom_amount?: number;
+  /**
+   * description
+   * The shipping method's description.
+   */
+  description?: string;
+  /**
+   * internal_note
+   * A note viewed only by admin users about the shipping method.
+   */
+  internal_note?: string;
+  /** The shipping method's metadata, can hold custom key-value pairs. */
+  metadata?: object;
+}
+
 /** The API key's details. */
 export interface AdminApiKey {
   /**
@@ -1000,7 +1076,8 @@ export interface AdminCreateFulfillment {
     country_code?: string;
     /**
      * province
-     * The delivery address's province.
+     * The delivery address's ISO 3166-2 province code. Must be lower-case.
+     * @example "us-ca"
      */
     province?: string;
     /**
@@ -1170,6 +1247,30 @@ export interface AdminCreateInventoryItem {
    */
   thumbnail?: string;
   /** The inventory item's metadata, used to store custom key-value pairs. */
+  metadata?: object;
+}
+
+/** The details of a credit line to add to an order. */
+export interface AdminCreateOrderCreditLines {
+  /**
+   * amount
+   * The amount of the credit line.
+   * @example 100
+   */
+  amount: number;
+  /**
+   * reference
+   * The name of the table that the credit line is referencing.
+   * @example "order"
+   */
+  reference: string;
+  /**
+   * reference_id
+   * The ID of a record in the table that the credit line is referencing.
+   * @example "order_123"
+   */
+  reference_id: string;
+  /** The credit line's metadata, can hold custom key-value pairs. */
   metadata?: object;
 }
 
@@ -1976,7 +2077,8 @@ export interface AdminCreateTaxRegion {
   country_code: string;
   /**
    * province_code
-   * The tax region's province code.
+   * The tax region's ISO 3166-2 province code. Must be lower-case.
+   * @example "us-ca"
    */
   province_code?: string;
   /**
@@ -2283,7 +2385,8 @@ export interface AdminCustomerAddress {
   country_code: string;
   /**
    * province
-   * The address's province.
+   * The address's lower-case ISO 3166-2 province code.
+   * @example "us-ca"
    */
   province: string;
   /**
@@ -2924,6 +3027,10 @@ export interface AdminDraftOrder {
    * The tax total of the draft order's shipping excluding promotions.
    */
   original_shipping_tax_total: number;
+  /** The region's details. */
+  region?: AdminRegion;
+  /** The draft order's credit lines. */
+  credit_lines?: OrderCreditLine[];
 }
 
 /** The list of draft orders with pagination fields. */
@@ -2945,6 +3052,514 @@ export interface AdminDraftOrderListResponse {
   count: number;
   /** The list of draft orders. */
   draft_orders: AdminDraftOrder[];
+}
+
+/** The draft order preview's details. */
+export interface AdminDraftOrderPreview {
+  /**
+   * return_requested_total
+   * The total of the requested return.
+   */
+  return_requested_total: number;
+  /** The order change's details. */
+  order_change: AdminOrderChange;
+  /** The order's items. */
+  items?: ({
+    /**
+     * id
+     * The item's ID.
+     */
+    id: string;
+    /**
+     * title
+     * The item's title.
+     */
+    title: string;
+    /**
+     * subtitle
+     * The item's subtitle.
+     */
+    subtitle: string;
+    /**
+     * thumbnail
+     * The URL of the item's thumbnail.
+     */
+    thumbnail: string;
+    /** The product variant's details. */
+    variant?: BaseProductVariant;
+    /**
+     * variant_id
+     * The ID of the associated variant.
+     */
+    variant_id: string;
+    /** The product's details. */
+    product?: AdminProduct;
+    /**
+     * product_id
+     * The ID of the associated product.
+     */
+    product_id: string;
+    /**
+     * product_title
+     * The title of the item's product.
+     */
+    product_title: string;
+    /**
+     * product_description
+     * The description of the item's product.
+     */
+    product_description: string;
+    /**
+     * product_subtitle
+     * The subtitle of the item's product.
+     */
+    product_subtitle: string;
+    /**
+     * product_type
+     * The ID of type of the item's product.
+     */
+    product_type: string;
+    /**
+     * product_collection
+     * The ID of collection of the item's product.
+     */
+    product_collection: string;
+    /**
+     * product_handle
+     * The handle of the item's product.
+     */
+    product_handle: string;
+    /**
+     * variant_sku
+     * The SKU of the item's variant.
+     */
+    variant_sku: string;
+    /**
+     * variant_barcode
+     * The barcode of the item's variant.
+     */
+    variant_barcode: string;
+    /**
+     * variant_title
+     * The title of the item's variant.
+     */
+    variant_title: string;
+    /** The option values of the item's variant as key-value pairs. The key is the title of an option, and the value is the option's value. */
+    variant_option_values: object;
+    /**
+     * requires_shipping
+     * Whether the item requires shipping.
+     */
+    requires_shipping: boolean;
+    /**
+     * is_discountable
+     * Whether the item is discountable.
+     */
+    is_discountable: boolean;
+    /**
+     * is_tax_inclusive
+     * Whether the item's price includes taxes.
+     */
+    is_tax_inclusive: boolean;
+    /**
+     * compare_at_unit_price
+     * The original price of the item before a promotion or sale.
+     */
+    compare_at_unit_price?: number;
+    /**
+     * unit_price
+     * The item's unit price.
+     */
+    unit_price: number;
+    /**
+     * quantity
+     * The item's quantity.
+     */
+    quantity: number;
+    /** The item's tax lines. */
+    tax_lines?: BaseOrderLineItemTaxLine[];
+    /** The item's adjustments. */
+    adjustments?: BaseOrderLineItemAdjustment[];
+    /** The item's detail. */
+    detail: BaseOrderItemDetail;
+    /**
+     * created_at
+     * The date the item was created.
+     * @format date-time
+     */
+    created_at: string;
+    /**
+     * updated_at
+     * The date the item was updated.
+     * @format date-time
+     */
+    updated_at: string;
+    /** The item's metadata, can hold custom key-value pairs. */
+    metadata: object;
+    /**
+     * original_total
+     * The item's total including taxes, excluding promotions.
+     */
+    original_total: number;
+    /**
+     * original_subtotal
+     * The item's total excluding taxes, including promotions.
+     */
+    original_subtotal: number;
+    /**
+     * original_tax_total
+     * The tax total of the item excluding promotions.
+     */
+    original_tax_total: number;
+    /**
+     * item_total
+     * The item's total for a single unit including taxes and promotions.
+     */
+    item_total: number;
+    /**
+     * item_subtotal
+     * The item's total for a single unit excluding taxes, including promotions.
+     */
+    item_subtotal: number;
+    /**
+     * item_tax_total
+     * The tax total for a single unit of the item including promotions.
+     */
+    item_tax_total: number;
+    /**
+     * total
+     * The item's total including taxes and promotions.
+     */
+    total: number;
+    /**
+     * subtotal
+     * The item's total excluding taxes, including promotions.
+     */
+    subtotal: number;
+    /**
+     * tax_total
+     * The tax total of the item including promotions.
+     */
+    tax_total: number;
+    /**
+     * discount_total
+     * The total of the item's discount / promotion.
+     */
+    discount_total: number;
+    /**
+     * discount_tax_total
+     * The tax total of the item's discount / promotion
+     */
+    discount_tax_total: number;
+    /**
+     * refundable_total
+     * The total refundable amount of the item's total.
+     */
+    refundable_total: number;
+    /**
+     * refundable_total_per_unit
+     * The total refundable amount of the item's total for a single unit.
+     */
+    refundable_total_per_unit: number;
+  } & {
+    /** The actions applied on an item. */
+    actions?: object[];
+  })[];
+  /** The order's shipping methods. */
+  shipping_methods?: ({
+    /**
+     * id
+     * The shipping method's ID.
+     */
+    id: string;
+    /**
+     * order_id
+     * The ID of the order this shipping method belongs to.
+     */
+    order_id: string;
+    /**
+     * name
+     * The shipping method's name.
+     */
+    name: string;
+    /**
+     * description
+     * The shipping method's description.
+     */
+    description?: string;
+    /**
+     * amount
+     * The shipping method's amount.
+     */
+    amount: number;
+    /**
+     * is_tax_inclusive
+     * Whether the shipping method's amount is tax inclusive.
+     */
+    is_tax_inclusive: boolean;
+    /**
+     * shipping_option_id
+     * The ID of the shipping option this method was created from.
+     */
+    shipping_option_id: string;
+    /** The data relevant for the fulfillment provider to process this shipment. */
+    data: object;
+    /** The shipping method's metadata, can hold custom key-value pairs. */
+    metadata: object;
+    /** The shipping method's tax lines. */
+    tax_lines?: BaseOrderShippingMethodTaxLine[];
+    /** The shipping method's adjustments. */
+    adjustments?: BaseOrderShippingMethodAdjustment[];
+    /** The shipping method's total including taxes, excluding promotions. */
+    original_total: string | number;
+    /** The shipping method's total excluding taxes, including promotions. */
+    original_subtotal: string | number;
+    /** The tax total of the shipping method excluding promotions. */
+    original_tax_total: string | number;
+    /** The shipping method's total including taxes and promotions. */
+    total: string | number;
+    /** The shipping method's total excluding taxes, including promotions. */
+    subtotal: string | number;
+    /** The tax total of the shipping method including promotions. */
+    tax_total: string | number;
+    /** The total of the shipping method's promotion. */
+    discount_total: string | number;
+    /** The tax total of the shipping method's promotion. */
+    discount_tax_total: string | number;
+    /**
+     * created_at
+     * The date the shipping method was created.
+     * @format date-time
+     */
+    created_at: string;
+    /**
+     * updated_at
+     * The date the shipping method was updated.
+     * @format date-time
+     */
+    updated_at: string;
+  } & {
+    /** The actions applied on the shipping method. */
+    actions?: object[];
+  })[];
+  /**
+   * currency_code
+   * The order's currency code.
+   */
+  currency_code: string;
+  /**
+   * version
+   * The order's version when this preview is applied.
+   */
+  version: number;
+  /**
+   * id
+   * The order's ID.
+   */
+  id: string;
+  /**
+   * region_id
+   * The ID of the order's associated region.
+   */
+  region_id: string;
+  /**
+   * customer_id
+   * The ID of the customer that placed the order.
+   */
+  customer_id: string;
+  /**
+   * sales_channel_id
+   * The ID of the sales channel that the order was placed in.
+   */
+  sales_channel_id: string;
+  /**
+   * email
+   * The email of the customer that placed the order.
+   * @format email
+   */
+  email: string;
+  /**
+   * display_id
+   * The order's display ID.
+   */
+  display_id?: number;
+  /** An order address. */
+  shipping_address?: AdminOrderAddress;
+  /** An order address. */
+  billing_address?: AdminOrderAddress;
+  /** The order's payment collections. */
+  payment_collections: AdminPaymentCollection[];
+  /** The order's payment status. */
+  payment_status:
+    | "canceled"
+    | "not_paid"
+    | "awaiting"
+    | "authorized"
+    | "partially_authorized"
+    | "captured"
+    | "partially_captured"
+    | "partially_refunded"
+    | "refunded"
+    | "requires_action";
+  /** The order's fulfillments. */
+  fulfillments?: AdminOrderFulfillment[];
+  /** The order's fulfillment status. */
+  fulfillment_status:
+    | "canceled"
+    | "not_fulfilled"
+    | "partially_fulfilled"
+    | "fulfilled"
+    | "partially_shipped"
+    | "shipped"
+    | "partially_delivered"
+    | "delivered";
+  /** The order's transactions. */
+  transactions?: BaseOrderTransaction[];
+  /** The order's summary details. */
+  summary: BaseOrderSummary;
+  /** The order's metadata, can hold custom key-value pairs. */
+  metadata?: object;
+  /**
+   * created_at
+   * The date the order was created.
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * updated_at
+   * The date the order was updated.
+   * @format date-time
+   */
+  updated_at: string;
+  /**
+   * original_item_total
+   * The total of the order's items including taxes, excluding promotions.
+   */
+  original_item_total: number;
+  /**
+   * original_item_subtotal
+   * The total of the order's items excluding taxes, including promotions.
+   */
+  original_item_subtotal: number;
+  /**
+   * original_item_tax_total
+   * The tax total of the order's items excluding promotions.
+   */
+  original_item_tax_total: number;
+  /**
+   * item_total
+   * The total of the order's items including taxes and promotions.
+   */
+  item_total: number;
+  /**
+   * item_subtotal
+   * The total of the order's items excluding taxes, including promotions.
+   */
+  item_subtotal: number;
+  /**
+   * item_tax_total
+   * The tax total of the order's items including promotions.
+   */
+  item_tax_total: number;
+  /**
+   * original_total
+   * The order's total excluding promotions, including taxes.
+   */
+  original_total: number;
+  /**
+   * original_subtotal
+   * The order's total excluding taxes, including promotions.
+   */
+  original_subtotal: number;
+  /**
+   * original_tax_total
+   * The order's tax total, excluding promotions.
+   */
+  original_tax_total: number;
+  /**
+   * total
+   * The order's total including taxes and promotions.
+   */
+  total: number;
+  /**
+   * subtotal
+   * The order's total excluding taxes, including promotions.
+   */
+  subtotal: number;
+  /**
+   * tax_total
+   * The order's tax total including promotions.
+   */
+  tax_total: number;
+  /**
+   * discount_total
+   * The order's discount or promotions total.
+   */
+  discount_total: number;
+  /**
+   * discount_tax_total
+   * The tax total of order's discount or promotion.
+   */
+  discount_tax_total: number;
+  /**
+   * gift_card_total
+   * The order's gift card total.
+   */
+  gift_card_total: number;
+  /**
+   * gift_card_tax_total
+   * The tax total of the order's gift card.
+   */
+  gift_card_tax_total: number;
+  /**
+   * shipping_total
+   * The order's shipping total including taxes and promotions.
+   */
+  shipping_total: number;
+  /**
+   * shipping_subtotal
+   * The order's shipping total excluding taxes, including promotions.
+   */
+  shipping_subtotal: number;
+  /**
+   * shipping_tax_total
+   * The tax total of the order's shipping.
+   */
+  shipping_tax_total: number;
+  /**
+   * original_shipping_total
+   * The order's shipping total including taxes, excluding promotions.
+   */
+  original_shipping_total: number;
+  /**
+   * original_shipping_subtotal
+   * The order's shipping total excluding taxes, including promotions.
+   */
+  original_shipping_subtotal: number;
+  /**
+   * original_shipping_tax_total
+   * The tax total of the order's shipping excluding promotions.
+   */
+  original_shipping_tax_total: number;
+  /** The customer's details. */
+  customer?: AdminCustomer;
+  /** The sales channel's details. */
+  sales_channel?: AdminSalesChannel;
+  /**
+   * status
+   * The order's status.
+   */
+  status: string;
+  /** The region's details. */
+  region?: AdminRegion;
+  /** The order preview's credit lines. */
+  credit_lines?: OrderCreditLine[];
+}
+
+/** The details of the preview on the draft order. */
+export interface AdminDraftOrderPreviewResponse {
+  /** The draft order preview's details. */
+  draft_order_preview: AdminDraftOrderPreview;
 }
 
 /** The draft order's details. */
@@ -3258,7 +3873,8 @@ export interface AdminFulfillmentAddress {
   country_code: string;
   /**
    * province
-   * The address's province.
+   * The address's lower-case ISO 3166-2 province code.
+   * @example "us-ca"
    */
   province: string;
   /**
@@ -3561,7 +4177,8 @@ export interface AdminGeoZone {
   country_code: string;
   /**
    * province_code
-   * The geo zone's province code.
+   * The geo zone's lower-case ISO 3166-2 province code.
+   * @example "us-ca"
    */
   province_code: string;
   /**
@@ -4134,6 +4751,10 @@ export interface AdminOrder {
    * The order's status.
    */
   status: string;
+  /** The region's details. */
+  region?: AdminRegion;
+  /** The order's credit lines. */
+  credit_lines?: OrderCreditLine[];
 }
 
 /** An order address. */
@@ -4193,7 +4814,8 @@ export interface AdminOrderAddress {
   country?: AdminRegionCountry;
   /**
    * province
-   * The address's province.
+   * The address's lower-case ISO 3166-2 province code.
+   * @example "us-ca"
    */
   province?: string;
   /**
@@ -5241,6 +5863,10 @@ export interface AdminOrderPreview {
    * The order's status.
    */
   status: string;
+  /** The region's details. */
+  region?: AdminRegion;
+  /** The order preview's credit lines. */
+  credit_lines?: OrderCreditLine[];
 }
 
 /** The preview of an order. */
@@ -5565,6 +6191,21 @@ export interface AdminPaymentSession {
   payment_collection?: object;
   /** The payment's details. */
   payment?: BasePayment;
+}
+
+/** The plugin's details. */
+export interface AdminPlugin {
+  /**
+   * name
+   * The plugin's name.
+   */
+  name: string;
+}
+
+/** The list of plugins. */
+export interface AdminPluginsListResponse {
+  /** The list of plugins. */
+  plugins: AdminPlugin[];
 }
 
 /** The details of canceling a claim. */
@@ -7746,6 +8387,12 @@ export interface AdminRegionResponse {
   region: AdminRegion;
 }
 
+/** The promotion codes to remove from the draft order. */
+export interface AdminRemoveDraftOrderPromotions {
+  /** The promotion codes to remove from the draft order. */
+  promo_codes: string[];
+}
+
 /** The reservation's details. */
 export interface AdminReservation {
   /**
@@ -8656,7 +9303,8 @@ export interface AdminStockLocationAddress {
   postal_code: string;
   /**
    * province
-   * The address's province.
+   * The address's lower-case ISO 3166-2 province code.
+   * @example "us-ca"
    */
   province: string;
 }
@@ -8951,7 +9599,8 @@ export interface AdminTaxRegion {
   country_code: string;
   /**
    * province_code
-   * The tax region's province code.
+   * The tax region's lower-case ISO 3166-2 province code.
+   * @example "us-ca"
    */
   province_code: string;
   /** The tax region's metadata, can hold custom key-value pairs. */
@@ -9125,7 +9774,8 @@ export interface AdminUpdateDraftOrder {
     country_code?: string;
     /**
      * province
-     * The shipping address's province.
+     * The shipping address's ISO 3166-2 province code. Must be lower-case.
+     * @example "us-ca"
      */
     province?: string;
     /**
@@ -9181,7 +9831,8 @@ export interface AdminUpdateDraftOrder {
     country_code?: string;
     /**
      * province
-     * The billing address's province.
+     * The billing address's ISO 3166-2 province code. Must be lower-case.
+     * @example "us-ca"
      */
     province?: string;
     /**
@@ -9194,6 +9845,85 @@ export interface AdminUpdateDraftOrder {
   };
   /** The draft order's metadata, can hold custom key-value pairs. */
   metadata?: object;
+  /**
+   * customer_id
+   * The ID of the customer associated with the draft order.
+   */
+  customer_id?: string;
+  /**
+   * sales_channel_id
+   * The ID of the sales channel associated with the draft order.
+   */
+  sales_channel_id?: string;
+}
+
+/** The updates to make on a changed shipping method. */
+export interface AdminUpdateDraftOrderActionShippingMethod {
+  /**
+   * shipping_option_id
+   * The ID of the associated shipping option.
+   */
+  shipping_option_id: string;
+  /**
+   * custom_amount
+   * The custom amount of the shipping method. If not provided, the shipping option's amount will be used.
+   */
+  custom_amount?: number;
+  /**
+   * description
+   * The shipping method's description.
+   */
+  description?: string;
+  /**
+   * internal_note
+   * A note viewed only by admin users about the shipping method.
+   */
+  internal_note?: string;
+  /** The shipping method's metadata, can hold custom key-value pairs. */
+  metadata?: object;
+}
+
+/** The updates to make on a draft order's item. */
+export interface AdminUpdateDraftOrderItem {
+  /**
+   * quantity
+   * The item's quantity.
+   */
+  quantity: number;
+  /**
+   * unit_price
+   * The item's unit price.
+   */
+  unit_price?: number;
+  /**
+   * compare_at_unit_price
+   * The original price of the item before a promotion or sale.
+   */
+  compare_at_unit_price?: number;
+  /**
+   * internal_note
+   * A note viewed only by admin users about the item.
+   */
+  internal_note?: string;
+}
+
+/** The updates to make on a draft order's shipping method. */
+export interface AdminUpdateDraftOrderShippingMethod {
+  /**
+   * shipping_option_id
+   * The ID of the associated shipping option.
+   */
+  shipping_option_id?: string;
+  /**
+   * custom_amount
+   * The custom amount of the shipping method. If not provided, the shipping option's amount will be used.
+   */
+  custom_amount?: number;
+  /**
+   * internal_note
+   * A note viewed only by admin users about the shipping method.
+   */
+  internal_note?: string;
 }
 
 /** The details to update in the order. */
@@ -9249,7 +9979,8 @@ export interface AdminUpdateOrder {
     country_code?: string;
     /**
      * province
-     * The address's province.
+     * The address's ISO 3166-2 province code. Must be lower-case.
+     * @example "us-ca"
      */
     province?: string;
     /**
@@ -9305,7 +10036,8 @@ export interface AdminUpdateOrder {
     country_code?: string;
     /**
      * province
-     * The address's province.
+     * The address's ISO 3166-2 province code. Must be lower-case.
+     * @example "us-ca"
      */
     province?: string;
     /**
@@ -9741,7 +10473,8 @@ export interface AdminUpdateStockLocation {
     postal_code?: string;
     /**
      * province
-     * The address's province.
+     * The address's ISO 3166-2 province code. Must be lower-case.
+     * @example "us-ca"
      */
     province?: string;
   };
@@ -9849,7 +10582,8 @@ export interface AdminUpdateTaxRate {
 export interface AdminUpdateTaxRegion {
   /**
    * province_code
-   * The tax region's province code.
+   * The tax region's ISO 3166-2 province code. Must be lower-case.
+   * @example "us-ca"
    */
   province_code?: string;
   /** The tax region's metadata, can hold custom key-value pairs. */
@@ -9926,7 +10660,8 @@ export interface AdminUpsertStockLocationAddress {
   postal_code?: string;
   /**
    * province
-   * The address's province.
+   * The address's ISO 3166-2 province code. Must be lower-case.
+   * @example "us-ca"
    */
   province?: string;
 }
@@ -10086,12 +10821,12 @@ export interface AdminWorkflowExecutionExecution {
       invoke?: {
         /** The invokation step's state. */
         state:
+          | "failed"
           | "not_started"
           | "invoking"
           | "compensating"
           | "done"
           | "reverted"
-          | "failed"
           | "dormant"
           | "skipped"
           | "skipped_failure"
@@ -10118,9 +10853,11 @@ export interface AdminWorkflowExecutionExecution {
         noCompensation?: boolean;
         /**
          * continueOnPermanentFailure
-         * Whether the step continues executing even if its status is changed to failed.
+         * Whether the workflow should continue executing even if its status is changed to failed.
          */
         continueOnPermanentFailure?: boolean;
+        /** The ID of the step to skip to in case of a permanent failure. */
+        skipOnPermanentFailure?: string | boolean;
         /**
          * maxRetries
          * The maximum number of times to retry the step.
@@ -10157,12 +10894,12 @@ export interface AdminWorkflowExecutionExecution {
       compensate?: {
         /** The compensation function's state. */
         state:
+          | "failed"
           | "not_started"
           | "invoking"
           | "compensating"
           | "done"
           | "reverted"
-          | "failed"
           | "dormant"
           | "skipped"
           | "skipped_failure"
@@ -11384,7 +12121,8 @@ export interface BaseOrderAddress {
   country_code?: string;
   /**
    * province
-   * The address's province.
+   * The address's lower-case ISO 3166-2 province code.
+   * @example "US-CA"
    */
   province?: string;
   /**
@@ -13310,7 +14048,8 @@ export interface CreateAddress {
   country_code?: string;
   /**
    * province
-   * The address's province.
+   * The address's ISO 3166-2 province code. Must be lower-case.
+   * @example "us-ca"
    */
   province?: string;
   /**
@@ -13687,7 +14426,64 @@ export interface Order {
   /** The order's transactions. */
   transactions?: OrderTransaction[];
   /** The order's summary. */
-  summary?: object;
+  summary?: {
+    /**
+     * pending_difference
+     * The remaining amount to be paid or refunded.
+     */
+    pending_difference: number;
+    /**
+     * current_order_total
+     * The order's current total.
+     */
+    current_order_total: number;
+    /**
+     * original_order_total
+     * The order's total before any changes.
+     */
+    original_order_total: number;
+    /**
+     * transaction_total
+     * The total of the transactions (payments and refunds) made on the order.
+     */
+    transaction_total: number;
+    /**
+     * paid_total
+     * The total paid amount.
+     */
+    paid_total: number;
+    /**
+     * refunded_total
+     * The total refunded amount.
+     */
+    refunded_total: number;
+    /**
+     * credit_line_total
+     * The total credit line amount.
+     */
+    credit_line_total: number;
+    /**
+     * accounting_total
+     * The total amount for accounting purposes.
+     */
+    accounting_total: number;
+    /** The summary's raw pending difference. */
+    raw_pending_difference: object;
+    /** The summary's raw current order total. */
+    raw_current_order_total: object;
+    /** The summary's raw original order total. */
+    raw_original_order_total: object;
+    /** The summary's raw transaction total. */
+    raw_transaction_total: object;
+    /** The summary's raw paid total. */
+    raw_paid_total: object;
+    /** The summary's raw refunded total. */
+    raw_refunded_total: object;
+    /** The summary's raw credit line total. */
+    raw_credit_line_total: object;
+    /** The summary's raw accounting total. */
+    raw_accounting_total: object;
+  };
   /** The order's metadata, can hold custom key-value pairs. */
   metadata?: object;
   /**
@@ -13830,6 +14626,11 @@ export interface Order {
   display_id: number;
   /** The order's credit lines, useful to add additional payment amounts for an order. */
   credit_lines?: OrderCreditLine[];
+  /**
+   * is_draft_order
+   * Whether the order is a draft order.
+   */
+  is_draft_order?: boolean;
 }
 
 /** The address's details. */
@@ -13887,7 +14688,8 @@ export interface OrderAddress {
   country_code?: string;
   /**
    * province
-   * The address's province.
+   * The address's lower-case ISO 3166-2 province code.
+   * @example "us-ca"
    */
   province?: string;
   /**
@@ -14593,6 +15395,11 @@ export interface OrderLineItem {
    * The ID of the associated product's type.
    */
   product_type_id?: string;
+  /**
+   * is_giftcard
+   * Whether the item is a gift card.
+   */
+  is_giftcard: boolean;
 }
 
 /** The line item adjustment's details. */
@@ -15566,7 +16373,8 @@ export interface StoreCartAddress {
   country_code?: string;
   /**
    * province
-   * The address's province.
+   * The address's lower-case ISO 3166-2 province code.
+   * @example "us-ca"
    */
   province?: string;
   /**
@@ -15958,6 +16766,12 @@ export interface StoreCartPromotion {
      */
     currency_code: string;
   };
+}
+
+/** The promotion code to remove from the cart. */
+export interface StoreCartRemovePromotion {
+  /** The promotion code to remove from the cart. */
+  promo_codes: string[];
 }
 
 /** The cart's details. */
@@ -16676,7 +17490,8 @@ export interface StoreCustomerAddress {
   country_code: string;
   /**
    * province
-   * The address's province.
+   * The address's lower-case ISO 3166-2 province code.
+   * @example "us-ca"
    */
   province: string;
   /**
@@ -17026,7 +17841,8 @@ export interface StoreOrderAddress {
   country?: StoreRegionCountry;
   /**
    * province
-   * The address's province.
+   * The address's lower-case ISO 3166-2 province code.
+   * @example "us-ca"
    */
   province?: string;
   /**
@@ -22476,8 +23292,6 @@ export interface StoreProduct {
 
 /** The category's details. */
 export interface StoreProductCategory {
-  /** The category's products. */
-  products?: StoreProduct[];
   /**
    * id
    * The category's ID.
@@ -22531,6 +23345,8 @@ export interface StoreProductCategory {
    * @format date-time
    */
   deleted_at: string;
+  /** The category's products. */
+  products?: StoreProduct[];
 }
 
 /** The paginated list of product categories. */
@@ -23380,7 +24196,8 @@ export interface UpdateAddress {
   country_code?: string;
   /**
    * province
-   * The address's province.
+   * The address's ISO 3166-2 province code. Must be lower-case.
+   * @example "us-ca"
    */
   province?: string;
   /**
@@ -23619,7 +24436,11 @@ export interface AdminCreateCommissionRule {
 
 export interface AdminCreateRule {
   /** The type of the rule */
-  rule_type?: "global_product_catalog" | "require_product_approval" | "product_request_enabled";
+  rule_type?:
+    | "global_product_catalog"
+    | "require_product_approval"
+    | "product_request_enabled"
+    | "product_import_enabled";
   is_enabled?: boolean;
 }
 
@@ -23722,8 +24543,6 @@ export interface AdminReviewRequest {
   reviewer_note?: string;
   /** A status of the request */
   status?: "accepted" | "rejected";
-  /** Assign product to seller (applicable only to Product request) */
-  assign_product_to_seller?: boolean;
 }
 
 export interface AdminUpdateCommissionRule {
@@ -23771,6 +24590,78 @@ export interface ConfigurationRule {
   rule_type?: string;
   /** Flag that indicates if rule is enabled. */
   is_enabled?: boolean;
+}
+
+export interface CreateProduct {
+  /** The title of the product. */
+  title: string;
+  /** The subtitle of the product. */
+  subtitle?: string;
+  /** The description of the product. */
+  description?: string;
+  /**
+   * Whether the product is a gift card.
+   * @default false
+   */
+  is_giftcard?: boolean;
+  /**
+   * Whether the product can be discounted.
+   * @default true
+   */
+  discountable?: boolean;
+  /** Images of the product. */
+  images?: {
+    url: string;
+  }[];
+  /** The thumbnail of the product. */
+  thumbnail?: string;
+  /** A unique handle to identify the product. */
+  handle?: string;
+  /**
+   * The status of the product.
+   * @default "draft"
+   */
+  status?: "draft" | "proposed";
+  /** The external ID of the product. */
+  external_id?: string;
+  /** The ID of the product type. */
+  type_id?: string;
+  /** The ID of the collection the product belongs to. */
+  collection_id?: string;
+  /** Categories the product belongs to. */
+  categories?: {
+    id: string;
+  }[];
+  /** Tags associated with the product. */
+  tags?: {
+    id: string;
+  }[];
+  /** Product options. */
+  options?: CreateProductOption[];
+  /** Product variants. */
+  variants?: CreateProductVariant[];
+  /** The weight of the product. */
+  weight?: number;
+  /** The length of the product. */
+  length?: number;
+  /** The height of the product. */
+  height?: number;
+  /** The width of the product. */
+  width?: number;
+  /** The HS code of the product. */
+  hs_code?: string;
+  /** The MID code of the product. */
+  mid_code?: string;
+  /** The country of origin of the product. */
+  origin_country?: string;
+  /** The material composition of the product. */
+  material?: string;
+  /** Additional metadata for the product. */
+  metadata?: object;
+  /** Sales channels to associate the product with. */
+  sales_channels?: {
+    id: string;
+  }[];
 }
 
 export interface CreateProductOption {
@@ -23992,10 +24883,15 @@ export interface ProductCollectionRequest {
   };
 }
 
-export interface ProductRequest {
+export interface ProductTagRequest {
   /** The type of the request */
-  type: "product";
-  data: VendorCreateProduct;
+  type: "product_tag";
+  data: {
+    /** The product tag value */
+    value?: string;
+    /** The product tag metadata */
+    metadata?: object;
+  };
 }
 
 export interface ProductTypeRequest {
@@ -24048,6 +24944,8 @@ export interface StoreCreateOrderReturnRequest {
   order_id?: string;
   /** Customer note. */
   customer_note?: string;
+  /** ID of the shipping option */
+  shipping_option_id?: string;
   /** Array of items to return */
   line_items?: {
     line_item_id?: string;
@@ -24078,6 +24976,77 @@ export interface StoreCreateReview {
 }
 
 /**
+ * Create Wishlist Entry
+ * A schema for creating a wishlist entry.
+ */
+export interface StoreCreateWishlist {
+  /** The type of resource referenced by the wishlist entry. */
+  reference?: "product";
+  /** The ID of the resource being added to the wishlist. */
+  reference_id?: string;
+}
+
+/**
+ * Get Wishlists Parameters
+ * Parameters for retrieving a list of wishlists.
+ */
+export interface StoreGetWishlistsParams {
+  /**
+   * The number of wishlist entries to skip.
+   * @default 0
+   */
+  offset?: number;
+  /**
+   * The maximum number of wishlist entries to return.
+   * @default 50
+   */
+  limit?: number;
+}
+
+/**
+ * Seller
+ * A seller object with its properties
+ */
+export interface StoreSeller {
+  /** The unique identifier of the seller. */
+  id?: string;
+  /**
+   * The date with timezone at which the resource was created.
+   * @format date-time
+   */
+  created_at?: string;
+  /**
+   * The date with timezone at which the resource was last updated.
+   * @format date-time
+   */
+  updated_at?: string;
+  /** The name of the seller. */
+  name?: string;
+  /** A description of the seller. */
+  description?: string | null;
+  /** A unique handle for the seller. */
+  handle?: string;
+  /** Store contact email. */
+  email?: string | null;
+  /** Store contact phone. */
+  phone?: string | null;
+  /** URL to the seller's photo. */
+  photo?: string | null;
+  /** Seller address line. */
+  address_line?: string | null;
+  /** Seller postal code. */
+  postal_code?: string | null;
+  /** Seller city. */
+  city?: string | null;
+  /** Seller state. */
+  state?: string | null;
+  /** Seller country code. */
+  country_code?: string | null;
+  /** Seller tax id. */
+  tax_id?: string | null;
+}
+
+/**
  * Update Review
  * A schema for the review update.
  */
@@ -24093,6 +25062,67 @@ export interface StoreUpdateReview {
    * @maxLength 300
    */
   customer_note?: string;
+}
+
+export interface UpdateProduct {
+  /** The title of the product. */
+  title?: string;
+  /** Whether the product can be discounted. */
+  discountable?: boolean;
+  /** Whether the product is a gift card. */
+  is_giftcard?: boolean;
+  /** The product options to update. */
+  options?: UpdateProductOption[];
+  /** The product variants to update. */
+  variants?: UpdateProductVariant[];
+  /** The subtitle of the product. */
+  subtitle?: string | null;
+  /** The description of the product. */
+  description?: string | null;
+  /** Images of the product. */
+  images?: {
+    url?: string;
+  }[];
+  /** The thumbnail of the product. */
+  thumbnail?: string | null;
+  /** The handle of the product. */
+  handle?: string | null;
+  /** The ID of the product type. */
+  type_id?: string | null;
+  /** The external ID of the product. */
+  external_id?: string | null;
+  /** The ID of the collection the product belongs to. */
+  collection_id?: string | null;
+  /** Product category IDs to associate with the product. */
+  categories?: {
+    id: string;
+  }[];
+  /** Product tag IDs to associate with the product. */
+  tags?: {
+    id: string;
+  }[];
+  /** The weight of the product. */
+  weight?: number | null;
+  /** The length of the product. */
+  length?: number | null;
+  /** The height of the product. */
+  height?: number | null;
+  /** The width of the product. */
+  width?: number | null;
+  /** The HS code of the product. */
+  hs_code?: string | null;
+  /** The MID code of the product. */
+  mid_code?: string | null;
+  /** The country of origin of the product. */
+  origin_country?: string | null;
+  /** The material composition of the product. */
+  material?: string | null;
+  /** Additional metadata for the product. */
+  metadata?: object | null;
+  /** Sales channels to associate the product with. */
+  sales_channels?: {
+    id: string;
+  }[];
 }
 
 export interface UpdateProductOption {
@@ -24230,6 +25260,60 @@ export interface VendorAssignBrandName {
   brand_name: string;
 }
 
+export interface VendorBaseRuleOperatorOptions {
+  /**
+   * id
+   * The operator's ID.
+   */
+  id?: string;
+  /**
+   * value
+   * The operator's value.
+   */
+  value?: string;
+  /**
+   * label
+   * The operator's label.
+   */
+  label?: string;
+}
+
+export interface VendorBatchInventoryItemLevels {
+  /** Levels to create */
+  create?: VendorBatchInventoryLocationLevel[];
+  /** Levels to update */
+  update?: VendorBatchInventoryLocationLevel[];
+  /** Levels to delete */
+  delete?: string[];
+}
+
+export interface VendorBatchInventoryItemLocationsLevel {
+  /** Levels to create */
+  create?: VendorCreateInventoryLevel[];
+  /** Levels to update */
+  update?: VendorBatchInventoryLocationLevel[];
+  /** Levels to delete */
+  delete?: string[];
+}
+
+export interface VendorBatchInventoryLocationLevel {
+  /** The inventory item id. */
+  inventory_item_id?: string;
+  /** The quantity of the InventoryItem in StockLocation. */
+  stocked_quantity?: number;
+  /** The stock location id. */
+  location_id?: string;
+  /** The quantity incoming_quantity. */
+  incoming_quantity?: number;
+}
+
+export interface VendorBatchPromotionRule {
+  /** Rules to create. */
+  create?: VendorCreatePromotionRule[];
+  /** Rules to delete. */
+  delete?: string[];
+}
+
 /** The campaign's details. */
 export interface VendorCampaign {
   /**
@@ -24356,12 +25440,17 @@ export interface VendorCreateCampaignBudget {
   currency_code?: string;
 }
 
+/** Create customer group details */
+export interface VendorCreateCustomerGroup {
+  /** Customer group name */
+  name?: string;
+}
+
 export interface VendorCreateFulfillment {
-  /** The number of items to return. Default 50. */
   requires_shipping?: boolean;
-  /** The number of items to skip before starting the response. Default 0. */
+  /** The location id. */
   location_id?: string;
-  /** Sales channels to associate the product with. */
+  /** Items to create fulfillment. */
   items?: {
     id?: string;
     quantity?: number;
@@ -24462,77 +25551,10 @@ export interface VendorCreatePriceListPrice {
   max_quantity?: number;
 }
 
-export interface VendorCreateProduct {
-  /** The title of the product. */
-  title: string;
-  /** The subtitle of the product. */
-  subtitle?: string;
-  /** The description of the product. */
-  description?: string;
-  /**
-   * Whether the product is a gift card.
-   * @default false
-   */
-  is_giftcard?: boolean;
-  /**
-   * Whether the product can be discounted.
-   * @default true
-   */
-  discountable?: boolean;
-  /** Images of the product. */
-  images?: {
-    url: string;
-  }[];
-  /** The thumbnail of the product. */
-  thumbnail?: string;
-  /** A unique handle to identify the product. */
-  handle?: string;
-  /**
-   * The status of the product.
-   * @default "draft"
-   */
-  status?: "draft" | "proposed" | "published" | "rejected";
-  /** The external ID of the product. */
-  external_id?: string;
-  /** The ID of the product type. */
-  type_id?: string;
-  /** The ID of the collection the product belongs to. */
-  collection_id?: string;
-  /** Categories the product belongs to. */
-  categories?: {
-    id: string;
-  }[];
-  /** Tags associated with the product. */
-  tags?: {
-    id: string;
-  }[];
-  /** Product options. */
-  options?: CreateProductOption[];
-  /** Product variants. */
-  variants?: CreateProductVariant[];
-  /** The weight of the product. */
-  weight?: number;
-  /** The length of the product. */
-  length?: number;
-  /** The height of the product. */
-  height?: number;
-  /** The width of the product. */
-  width?: number;
-  /** The HS code of the product. */
-  hs_code?: string;
-  /** The MID code of the product. */
-  mid_code?: string;
-  /** The country of origin of the product. */
-  origin_country?: string;
-  /** The material composition of the product. */
-  material?: string;
-  /** Additional metadata for the product. */
-  metadata?: object;
-  /** Sales channels to associate the product with. */
-  sales_channels?: {
-    id: string;
-  }[];
-}
+export type VendorCreateProduct = CreateProduct & {
+  /** Additional data to use in products hooks. */
+  additional_data?: Record<string, any>;
+};
 
 export interface VendorCreateProductTag {
   /** The title of the product tag. */
@@ -24549,6 +25571,9 @@ export interface VendorCreatePromotion {
    * @default false
    */
   is_automatic?: boolean;
+  /** The campaign id. */
+  campaign_id?: string;
+  campaign?: VendorCreateCampaign;
   /** The type of the promotion. */
   type?: "standard";
   application_method?: VendorCreateApplicationMethod;
@@ -24569,7 +25594,25 @@ export interface VendorCreatePromotionRule {
 
 export interface VendorCreateRequest {
   /** The resource to be created by request */
-  request: ProductRequest | ProductCollectionRequest | ProductCategoryRequest | ReviewRemoveRequest;
+  request:
+    | ProductCollectionRequest
+    | ProductCategoryRequest
+    | ReviewRemoveRequest
+    | ProductTypeRequest
+    | ProductTagRequest;
+}
+
+export interface VendorCreateReservation {
+  /** The description of the reservation. */
+  description?: string;
+  /** The location id of the reservation. */
+  location_id?: string;
+  /** The inventory item id of the reservation. */
+  inventory_item_id?: string;
+  /** The line item id of the reservation. */
+  line_item_id?: string;
+  /** The number of items in the reservation. */
+  quantity?: number;
 }
 
 export interface VendorCreateSeller {
@@ -24629,6 +25672,15 @@ export interface VendorCreateShippingOption {
   /** The prices of the shipping option. */
   prices: CreateShippingOptionPriceWithCurrency[];
   type: CreateShippingOptionTypeObject;
+}
+
+export interface VendorCreateShippingProfile {
+  /** Name of the shipping profile */
+  name: string;
+  /** Type of the shipping profile */
+  type: string;
+  /** Additional metadata */
+  metadata?: object | null;
 }
 
 export interface VendorCreateStockLocation {
@@ -25086,6 +26138,14 @@ export interface VendorInviteMember {
   role: "owner" | "admin" | "member";
 }
 
+/** Create customer group details */
+export interface VendorLinkCustomersToGroup {
+  /** Customer ids to add. */
+  add?: string[];
+  /** Customer ids to remove. */
+  remove?: string[];
+}
+
 /**
  * Member
  * A member object with its properties
@@ -25266,6 +26326,189 @@ export interface VendorOrderAddress {
   updated_at?: string;
 }
 
+/** The order's change. */
+export interface VendorOrderChange {
+  /**
+   * id
+   * The order change's ID.
+   */
+  id?: string;
+  /**
+   * version
+   * The order change's version. This will be the order's version when the change is applied.
+   */
+  version?: number;
+  /** The order change's type. */
+  change_type?: "return" | "exchange" | "claim" | "edit";
+  /**
+   * order_id
+   * The ID of the order this change applies on.
+   */
+  order_id?: string;
+  /**
+   * return_id
+   * The ID of the associated return.
+   */
+  return_id?: string;
+  /**
+   * exchange_id
+   * The ID of the associated exchange.
+   */
+  exchange_id?: string;
+  /**
+   * claim_id
+   * The ID of the associated claim.
+   */
+  claim_id?: string;
+  /** The order change's actions. */
+  actions?: VendorOrderChangeAction[];
+  /** The order change's status. */
+  status?: "canceled" | "requested" | "pending" | "confirmed" | "declined";
+  /**
+   * requested_by
+   * The ID of the user that requested the change.
+   */
+  requested_by?: string;
+  /**
+   * requested_at
+   * The date the order change was requested.
+   * @format date-time
+   */
+  requested_at?: string;
+  /**
+   * confirmed_by
+   * The ID of the user that confirmed the order change.
+   */
+  confirmed_by?: string;
+  /**
+   * confirmed_at
+   * The date the order change was confirmed.
+   * @format date-time
+   */
+  confirmed_at?: string;
+  /**
+   * declined_by
+   * The ID of the user that declined the order change.
+   */
+  declined_by?: string;
+  /**
+   * declined_reason
+   * The reason the order change was declined.
+   */
+  declined_reason?: string;
+  /** The order change's metadata, can hold custom key-value pairs. */
+  metadata?: object;
+  /**
+   * declined_at
+   * The date the order change was declined.
+   * @format date-time
+   */
+  declined_at?: string;
+  /**
+   * canceled_by
+   * The ID of the user that canceled the order change.
+   */
+  canceled_by?: string;
+  /**
+   * canceled_at
+   * The date the order change was canceled.
+   * @format date-time
+   */
+  canceled_at?: string;
+  /**
+   * created_at
+   * The date the order change was created.
+   * @format date-time
+   */
+  created_at?: string;
+  /**
+   * updated_at
+   * The date the order change was updated.
+   * @format date-time
+   */
+  updated_at?: string;
+}
+
+/** The order change action's details. */
+export interface VendorOrderChangeAction {
+  /**
+   * id
+   * The action's ID.
+   */
+  id?: string;
+  /**
+   * order_change_id
+   * The ID of the order change that the action belongs to.
+   */
+  order_change_id?: string;
+  /**
+   * order_id
+   * The ID of the order the associated change is for.
+   */
+  order_id?: string;
+  /**
+   * return_id
+   * The ID of the associated return.
+   */
+  return_id?: string;
+  /**
+   * claim_id
+   * The ID of the associated claim.
+   */
+  claim_id?: string;
+  /**
+   * exchange_id
+   * The ID of the associated exchange.
+   */
+  exchange_id?: string;
+  /**
+   * reference
+   * The name of the table this action applies on.
+   */
+  reference?: "claim" | "exchange" | "return" | "order_shipping_method";
+  /**
+   * reference_id
+   * The ID of the record in the referenced table.
+   */
+  reference_id?: string;
+  /** The applied action. */
+  action?:
+    | "CANCEL_RETURN_ITEM"
+    | "FULFILL_ITEM"
+    | "DELIVER_ITEM"
+    | "CANCEL_ITEM_FULFILLMENT"
+    | "ITEM_ADD"
+    | "ITEM_REMOVE"
+    | "ITEM_UPDATE"
+    | "RECEIVE_DAMAGED_RETURN_ITEM"
+    | "RECEIVE_RETURN_ITEM"
+    | "RETURN_ITEM"
+    | "SHIPPING_ADD"
+    | "SHIPPING_REMOVE"
+    | "SHIP_ITEM"
+    | "WRITE_OFF_ITEM"
+    | "REINSTATE_ITEM";
+  /** The action's details. */
+  details?: object;
+  /**
+   * internal_note
+   * A note that's viewed only by admin users.
+   */
+  internal_note?: string;
+  /**
+   * created_at
+   * The date the action was created.
+   * @format date-time
+   */
+  created_at?: string;
+  /**
+   * updated_at
+   * The date the action was updated.
+   * @format date-time
+   */
+  updated_at?: string;
+}
+
 /**
  * VendorOrderCountryCode
  * The country's details.
@@ -25304,6 +26547,20 @@ export interface VendorOrderCountryCode {
    * The country's display name.
    */
   display_name?: string;
+}
+
+export interface VendorOrderCreateShipment {
+  /** Items in the shipment. */
+  items?: {
+    id?: string;
+    quantity?: number;
+  }[];
+  /** Labels of the shipment */
+  labels?: {
+    tracking_number?: string;
+    tracking_url?: string;
+    label_url?: string;
+  }[];
 }
 
 /** The order's details. */
@@ -26608,6 +27865,96 @@ export interface VendorPromotionRule {
   }[];
 }
 
+/** The return receival details. */
+export interface VendorReceiveReturn {
+  /**
+   * internal_note
+   * A note.
+   */
+  internal_note?: string;
+  /**
+   * description
+   * The return's description.
+   */
+  description?: string;
+  /** The return's metadata, can hold custom key-value pairs. */
+  metadata?: object;
+}
+
+/** The items details. */
+export interface VendorReceiveReturnItems {
+  /** The items details. */
+  items?: {
+    /**
+     * id
+     * The ID of the item in the order.
+     */
+    id?: string;
+    /**
+     * quantity
+     * The item's quantity.
+     */
+    quantity?: number;
+    /**
+     * internal_note
+     * A note.
+     */
+    internal_note?: string;
+  }[];
+}
+
+/**
+ * Region
+ * Region object
+ */
+export interface VendorRegion {
+  /** The unique identifier of the item. */
+  id?: string;
+  /**
+   * The date with timezone at which the resource was created.
+   * @format date-time
+   */
+  created_at?: string;
+  /**
+   * The date with timezone at which the resource was last updated.
+   * @format date-time
+   */
+  updated_at?: string;
+  /** The name of the region. */
+  name?: string;
+  /** The currency of the region. */
+  currency_code?: string;
+  /** Whether taxes are applied automatically during checkout. */
+  automatic_taxes?: boolean;
+  /** The type of the promotion. */
+  type?: string;
+  countries?: VendorRegionCountry[];
+}
+
+/**
+ * Region country
+ * Region country object
+ */
+export interface VendorRegionCountry {
+  /** The unique identifier of the item. */
+  id?: string;
+  /** Name of the country */
+  name?: string;
+  /** Display name of the country */
+  display_name?: string;
+  /** ISO_2 code */
+  iso_2?: string;
+  /** ISO_3 code */
+  iso_3?: string;
+  /** Numcode */
+  num_code?: string;
+}
+
+export interface VendorRemoveProductsFromPriceList {
+  /** Products ids to remove from the price list */
+  remove?: string[];
+}
+
 /**
  * Request
  * A request object
@@ -26699,6 +28046,172 @@ export interface VendorReservation {
    * @format date-time
    */
   updated_at?: string;
+}
+
+/** The return's details. */
+export interface VendorReturn {
+  /**
+   * id
+   * The return's ID.
+   */
+  id?: string;
+  /** The return's status. */
+  status?: "canceled" | "requested" | "received" | "partially_received";
+  /**
+   * refund_amount
+   * The amount refunded by this return.
+   */
+  refund_amount?: number;
+  /**
+   * order_id
+   * The ID of the associated order.
+   */
+  order_id?: string;
+  /** The return's items. */
+  items?: VendorReturnItem[];
+  /**
+   * created_at
+   * The date the return was created.
+   * @format date-time
+   */
+  created_at?: string;
+  /**
+   * canceled_at
+   * The date the return was canceled.
+   * @format date-time
+   */
+  canceled_at?: string;
+  /**
+   * exchange_id
+   * The return's exchange id.
+   */
+  exchange_id?: string;
+  /**
+   * location_id
+   * The return's location id.
+   */
+  location_id?: string;
+  /**
+   * claim_id
+   * The return's claim id.
+   */
+  claim_id?: string;
+  /**
+   * order_version
+   * The return's order version.
+   */
+  order_version?: number;
+  /**
+   * display_id
+   * The return's display id.
+   */
+  display_id?: number;
+  /**
+   * no_notification
+   * Whether the customer should receive notifications about the return's updates.
+   */
+  no_notification?: boolean;
+  /**
+   * received_at
+   * The date the return was received.
+   */
+  received_at?: string;
+}
+
+/** The return item's details. */
+export interface VendorReturnItem {
+  /**
+   * id
+   * The return item's ID.
+   */
+  id?: string;
+  /**
+   * quantity
+   * The return item's quantity.
+   */
+  quantity?: number;
+  /**
+   * received_quantity
+   * The received quantity of the item. This quantity is added to the stocked inventory quantity of the item.
+   */
+  received_quantity?: number;
+  /**
+   * damaged_quantity
+   * The received damaged quantity of the item, which isn't added to the stocked inventory quantity of the item.
+   */
+  damaged_quantity?: number;
+  /**
+   * reason_id
+   * The ID of the return reason associated with the item.
+   */
+  reason_id?: string;
+  /**
+   * note
+   * A note about why the item was returned.
+   */
+  note?: string;
+  /**
+   * item_id
+   * The ID of the associated order item.
+   */
+  item_id?: string;
+  /**
+   * return_id
+   * The ID of the return this return item belongs to.
+   */
+  return_id?: string;
+  /** The return item's metadata, can hold custom key-value pairs. */
+  metadata?: object;
+}
+
+/** The return receival details. */
+export interface VendorReturnsDismissItemsAction {
+  /** Quantity of the item */
+  quantity?: string;
+  /** A note. */
+  internal_note?: string;
+}
+
+/** The return receival details. */
+export interface VendorReturnsReceiveItemsAction {
+  /** Quantity of the item */
+  quantity?: string;
+  /** A note. */
+  internal_note?: string;
+}
+
+export interface VendorRuleAttributeOption {
+  /**
+   * id
+   * The rule attribute's ID, which is a rule's `attribute` it refers to.
+   */
+  id?: string;
+  /**
+   * value
+   * The rule value's value.
+   */
+  value?: string;
+  /**
+   * label
+   * The rule value's label.
+   */
+  label?: string;
+  /** The attribute's operators. */
+  operators?: any[];
+  items?: VendorBaseRuleOperatorOptions;
+}
+
+export interface VendorRuleValueOption {
+  /**
+   * value
+   * The rule value's value.
+   */
+  value?: string;
+  /**
+   * label
+   * The rule value's label.
+   */
+  label?: string;
 }
 
 /** The details of the sales channel. */
@@ -27009,6 +28522,43 @@ export interface VendorShippingOptionType {
   shipping_option_id: string;
 }
 
+/** The shipping profile details. */
+export interface VendorShippingProfile {
+  /**
+   * id
+   * The shipping profile's ID.
+   */
+  id?: string;
+  /**
+   * created_at
+   * The date the shipping profile was created.
+   * @format date-time
+   */
+  created_at?: string;
+  /**
+   * updated_at
+   * The date the shipping profile was updated.
+   * @format date-time
+   */
+  updated_at?: string;
+  /**
+   * deleted_at
+   * The date the shipping profile was deleted.
+   * @format date-time
+   */
+  deleted_at?: string;
+  /**
+   * label
+   * The shipping profile name.
+   */
+  name?: string;
+  /**
+   * description
+   * The shipping profile type.
+   */
+  type?: string;
+}
+
 /** The stock location's details. */
 export interface VendorStockLocation {
   /**
@@ -27044,6 +28594,21 @@ export interface VendorStore {
   supported_currencies?: VendorCurrency[];
 }
 
+export interface VendorUpdateApplicationMethod {
+  /** Description of the promotion. */
+  description?: string;
+  /** The percentage value of the promotion. */
+  value?: number;
+  /** The max quantity of the items. */
+  max_quantity?: string;
+  /** The currency code. */
+  currency_code?: string;
+  /** Apply to quantity of the items. */
+  apply_to_quantity?: string;
+  /** Buy ruyles min quantity of the items. */
+  buy_rules_min_quantity?: string;
+}
+
 export interface VendorUpdateCampaign {
   /** The campaign's name. */
   name?: string;
@@ -27059,6 +28624,14 @@ export interface VendorUpdateCampaign {
     /** The buget's limit. */
     limit?: number;
   };
+}
+
+/** Update customers customer groups */
+export interface VendorUpdateCustomersCustomerGroups {
+  /** Customer group ids to add. */
+  add?: string[];
+  /** Customer group ids to remove. */
+  remove?: string[];
 }
 
 /**
@@ -27196,67 +28769,39 @@ export interface VendorUpdatePriceList {
   type?: "sale" | "override";
 }
 
-export interface VendorUpdateProduct {
-  /** The title of the product. */
-  title?: string;
-  /** Whether the product can be discounted. */
-  discountable?: boolean;
-  /** Whether the product is a gift card. */
-  is_giftcard?: boolean;
-  /** The product options to update. */
-  options?: UpdateProductOption[];
-  /** The product variants to update. */
-  variants?: UpdateProductVariant[];
+export type VendorUpdateProduct = UpdateProduct & {
+  /** Additional data to use in products hooks. */
+  additional_data?: Record<string, any>;
+};
+
+export interface VendorUpdateProductStatus {
   /** The status of the product. */
-  status?: "draft" | "proposed" | "published" | "rejected";
-  /** The subtitle of the product. */
-  subtitle?: string | null;
-  /** The description of the product. */
-  description?: string | null;
-  /** Images of the product. */
-  images?: {
-    url?: string;
-  }[];
-  /** The thumbnail of the product. */
-  thumbnail?: string | null;
-  /** The handle of the product. */
-  handle?: string | null;
-  /** The ID of the product type. */
-  type_id?: string | null;
-  /** The external ID of the product. */
-  external_id?: string | null;
-  /** The ID of the collection the product belongs to. */
-  collection_id?: string | null;
-  /** Product category IDs to associate with the product. */
-  categories?: {
-    id: string;
-  }[];
-  /** Product tag IDs to associate with the product. */
-  tags?: {
-    id: string;
-  }[];
-  /** The weight of the product. */
-  weight?: number | null;
-  /** The length of the product. */
-  length?: number | null;
-  /** The height of the product. */
-  height?: number | null;
-  /** The width of the product. */
-  width?: number | null;
-  /** The HS code of the product. */
-  hs_code?: string | null;
-  /** The MID code of the product. */
-  mid_code?: string | null;
-  /** The country of origin of the product. */
-  origin_country?: string | null;
-  /** The material composition of the product. */
-  material?: string | null;
-  /** Additional metadata for the product. */
-  metadata?: object | null;
-  /** Sales channels to associate the product with. */
-  sales_channels?: {
-    id: string;
-  }[];
+  status?: "draft" | "proposed" | "published";
+}
+
+export interface VendorUpdatePromotion {
+  /** The code of the promotion. */
+  code?: string;
+  /**
+   * Whether the promotion is applied automatically.
+   * @default false
+   */
+  is_automatic?: boolean;
+  /** The campaign id. */
+  campaign_id?: string;
+  /** The status of the promotion. */
+  status?: "draft" | "active" | "inactive";
+  application_method?: VendorUpdateApplicationMethod;
+}
+
+export interface VendorUpdateRequestData {
+  /** The resource to be updated */
+  request:
+    | ProductCollectionRequest
+    | ProductCategoryRequest
+    | ReviewRemoveRequest
+    | ProductTypeRequest
+    | ProductTagRequest;
 }
 
 export interface VendorUpdateReservation {
@@ -27348,6 +28893,15 @@ export interface VendorUpdateShippingOption {
   type?: CreateShippingOptionTypeObject;
 }
 
+export interface VendorUpdateShippingProfile {
+  /** Name of the shipping profile */
+  name?: string;
+  /** Type of the shipping profile */
+  type?: string;
+  /** Additional metadata */
+  metadata?: object | null;
+}
+
 export interface VendorUpdateStockLocation {
   /** Name of the stock location */
   name?: string;
@@ -27356,6 +28910,92 @@ export interface VendorUpdateStockLocation {
   address_id?: string | null;
   /** Additional metadata */
   metadata?: object | null;
+}
+
+/**
+ * Wishlist Response
+ * A response object containing a list of wishlists and pagination details.
+ */
+export interface Wishlist {
+  /** A list of wishlists. */
+  wishlists?: {
+    /** The unique identifier of the wishlist. */
+    id?: string;
+    /** A list of products in the wishlist. */
+    products?: {
+      /** The unique identifier of the product. */
+      id?: string | null;
+      /** The title of the product. */
+      title?: string | null;
+      /** The unique handle of the product. */
+      handle?: string | null;
+      /** The subtitle of the product. */
+      subtitle?: string | null;
+      /** The description of the product. */
+      description?: string | null;
+      /** Indicates if the product is a gift card. */
+      is_giftcard?: boolean | null;
+      /** The status of the product. */
+      status?: string | null;
+      /** URL of the product thumbnail. */
+      thumbnail?: string | null;
+      /** Weight of the product. */
+      weight?: number | null;
+      /** Length of the product. */
+      length?: number | null;
+      /** Height of the product. */
+      height?: number | null;
+      /** Width of the product. */
+      width?: number | null;
+      /** Country of origin. */
+      origin_country?: string | null;
+      /** Harmonized System code. */
+      hs_code?: string | null;
+      /** Manufacturer Identification code. */
+      mid_code?: string | null;
+      /** Material of the product. */
+      material?: string | null;
+      /** Indicates if the product is discountable. */
+      discountable?: boolean | null;
+      /** External identifier. */
+      external_id?: string | null;
+      /** Additional metadata. */
+      metadata?: object | null;
+      /** Product type identifier. */
+      type_id?: string | null;
+      /** Product type. */
+      type?: string | null;
+      /** Collection identifier. */
+      collection_id?: string | null;
+      collection?: {
+        /** Collection ID. */
+        id?: string;
+      } | null;
+      /**
+       * The date with timezone when the product was created.
+       * @format date-time
+       */
+      created_at?: string;
+      /**
+       * The date with timezone when the product was last updated.
+       * @format date-time
+       */
+      updated_at?: string;
+      /**
+       * The date with timezone when the product was deleted.
+       * @format date-time
+       */
+      deleted_at?: string | null;
+      /** Variant identifier. */
+      variant_id?: string | null;
+      /** Price set identifier. */
+      price_set_id?: string | null;
+      /** Currency code. */
+      currency_code?: string | null;
+      /** Calculated amount for the product. */
+      calculated_amount?: number | null;
+    }[];
+  }[];
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -31386,7 +33026,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
         /**
@@ -33303,7 +34943,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -33334,7 +34974,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -33396,7 +35036,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -33464,7 +35104,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
         /**
@@ -33493,7 +35133,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         city?: string | string[];
         /** Filter by a currency code. */
         country_code?: string | string[];
-        /** Filter by a province. */
+        /** Filter by an ISO 3166-2 province code. Must be lower-case. */
         province?: string | string[];
         /** Filter by a postal code. */
         postal_code?: string | string[];
@@ -33605,7 +35245,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         country_code: string;
         /**
          * province
-         * The address's province.
+         * The address's ISO 3166-2 province code. Must be lower-case.
+         * @example "us-ca"
          */
         province: string;
         /**
@@ -33627,7 +35268,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -33659,7 +35300,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -33739,7 +35380,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         country_code: string;
         /**
          * province
-         * The address's province.
+         * The address's ISO 3166-2 province code. Must be lower-case.
+         * @example "us-ca"
          */
         province: string;
         /**
@@ -33761,7 +35403,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -33793,7 +35435,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -33850,7 +35492,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -34686,7 +36328,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Create a draft order. This creates an order with the `is_draft_order` property enabled.
+     * @description Create a draft order. This creates an order with the `is_draft_order` property enabled. You can later convert the draft order to an order.
      *
      * @tags Admin Draft Orders
      * @name AdminPostDraftOrders
@@ -34761,7 +36403,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
           country_code: string;
           /**
            * province
-           * The billing address's province.
+           * The billing address's ISO 3166-2 province code. Must be lower-case.
+           * @example "us-ca"
            */
           province: string;
           /**
@@ -34816,7 +36459,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
           country_code: string;
           /**
            * province
-           * The shipping address's province.
+           * The shipping address's ISO 3166-2 province code. Must be lower-case.
+           * @example "us-ca"
            */
           province: string;
           /**
@@ -34982,7 +36626,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Update a draft order's details.
+     * @description Update a draft order's details. This doesn't include updating the draft order's items, shipping methods, or promotions. To update those, you need to create an edit that you can later request or confirm.
      *
      * @tags Admin Draft Orders
      * @name AdminPostDraftOrdersId
@@ -35010,6 +36654,343 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         secure: true,
         type: ContentType.Json,
         format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Convert a draft order to an order. This will finalize the draft order and create a new order with the same details.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminPostDraftOrdersIdConvertToOrder
+     * @summary Convert a Draft Order to an Order
+     * @request POST:/admin/draft-orders/{id}/convert-to-order
+     * @secure
+     */
+    adminPostDraftOrdersIdConvertToOrder: (
+      id: string,
+      query?: {
+        /**
+         * fields
+         * Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+         */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/convert-to-order`,
+        method: "POST",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Create an edit on a draft order. This will allow you to make changes to the draft order's items, shipping methods, or promotions. Once you've made the necessar changes, you can later either request the edit (which requires a confirmation from the customer), or force-confirm the edit.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminPostDraftOrdersIdEdit
+     * @summary Create a Draft Order Edit
+     * @request POST:/admin/draft-orders/{id}/edit
+     * @secure
+     */
+    adminPostDraftOrdersIdEdit: (id: string, params: RequestParams = {}) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Cancel an unconfirmed edit on a draft order.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminDeleteDraftOrdersIdEdit
+     * @summary Cancel Edit on Draft Order
+     * @request DELETE:/admin/draft-orders/{id}/edit
+     * @secure
+     */
+    adminDeleteDraftOrdersIdEdit: (id: string, params: RequestParams = {}) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Confirm an edit on a draft order. This will apply the changes made to the draft order.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminPostDraftOrdersIdEditConfirm
+     * @summary Confirm an Edit on a Draft Order
+     * @request POST:/admin/draft-orders/{id}/edit/confirm
+     * @secure
+     */
+    adminPostDraftOrdersIdEditConfirm: (id: string, params: RequestParams = {}) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/confirm`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Add an item to a draft order edit.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminPostDraftOrdersIdEditItems
+     * @summary Add Item to Draft Order Edit
+     * @request POST:/admin/draft-orders/{id}/edit/items
+     * @secure
+     */
+    adminPostDraftOrdersIdEditItems: (id: string, data: AdminAddDraftOrderItems, params: RequestParams = {}) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/items`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Update an existing item in a draft order edit.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminPostDraftOrdersIdEditItemsItemItemId
+     * @summary Update Existing Item in Draft Order Edit
+     * @request POST:/admin/draft-orders/{id}/edit/items/item/{item_id}
+     * @secure
+     */
+    adminPostDraftOrdersIdEditItemsItemItemId: (
+      id: string,
+      itemId: string,
+      data: AdminUpdateDraftOrderItem,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/items/item/${itemId}`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Update a new item that was added to a draft order edit by the ID of the item's `ITEM_ADD` action. Every item has an `actions` property, whose value is an array of actions. You can check the action's name using its `action` property, and use the value of the `id` property.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminPostDraftOrdersIdEditItemsActionId
+     * @summary Update New Item in Draft Order Edit
+     * @request POST:/admin/draft-orders/{id}/edit/items/{action_id}
+     * @secure
+     */
+    adminPostDraftOrdersIdEditItemsActionId: (
+      id: string,
+      actionId: string,
+      data: AdminUpdateDraftOrderItem,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/items/${actionId}`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Remove an order item from a draft order edit by the ID of the item's `ITEM_ADD` or `ITEM_UPDATE` action. Every item has an `actions` property, whose value is an array of actions. You can check the action's name using its `action` property, and use the value of the `id` property.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminDeleteDraftOrdersIdEditItemsActionId
+     * @summary Remove Item from Draft Order Edit
+     * @request DELETE:/admin/draft-orders/{id}/edit/items/{action_id}
+     * @secure
+     */
+    adminDeleteDraftOrdersIdEditItemsActionId: (id: string, actionId: string, params: RequestParams = {}) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/items/${actionId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Add promotions to a draft order edit.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminPostDraftOrdersIdEditPromotions
+     * @summary Add Promotions to Draft Order Edit
+     * @request POST:/admin/draft-orders/{id}/edit/promotions
+     * @secure
+     */
+    adminPostDraftOrdersIdEditPromotions: (
+      id: string,
+      data: AdminAddDraftOrderPromotions,
+      params: RequestParams = {},
+    ) =>
+      this.request<AdminDraftOrderPreviewResponse, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/promotions`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Remove specified promotions from a draft order edit.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminDeleteDraftOrdersIdEditPromotions
+     * @summary Remove Promotions from Draft Order Edit
+     * @request DELETE:/admin/draft-orders/{id}/edit/promotions
+     * @secure
+     */
+    adminDeleteDraftOrdersIdEditPromotions: (
+      id: string,
+      data: AdminRemoveDraftOrderPromotions,
+      params: RequestParams = {},
+    ) =>
+      this.request<AdminDraftOrderPreviewResponse, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/promotions`,
+        method: "DELETE",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Change the status of a draft order's edit to be requested. Later, the edit can be confirmed or canceled.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminPostDraftOrdersIdEditRequest
+     * @summary Request Edit on Draft Order
+     * @request POST:/admin/draft-orders/{id}/edit/request
+     * @secure
+     */
+    adminPostDraftOrdersIdEditRequest: (id: string, params: RequestParams = {}) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/request`,
+        method: "POST",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Add a shipping method to a draft order edit.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminPostDraftOrdersIdEditShippingMethods
+     * @summary Add Shipping Method to Draft Order Edit
+     * @request POST:/admin/draft-orders/{id}/edit/shipping-methods
+     * @secure
+     */
+    adminPostDraftOrdersIdEditShippingMethods: (
+      id: string,
+      data: AdminAddDraftOrderShippingMethod,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/shipping-methods`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Update an existing shipping method in a draft order edit.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminPostDraftOrdersIdEditShippingMethodsMethodMethodId
+     * @summary Update Existing Shipping Method in Draft Order Edit
+     * @request POST:/admin/draft-orders/{id}/edit/shipping-methods/method/{method_id}
+     * @secure
+     */
+    adminPostDraftOrdersIdEditShippingMethodsMethodMethodId: (
+      id: string,
+      methodId: string,
+      data: AdminUpdateDraftOrderShippingMethod,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/shipping-methods/method/${methodId}`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Remove an existing shipping method from a draft order edit.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminDeleteDraftOrdersIdEditShippingMethodsMethodMethodId
+     * @summary Remove Shipping Method from Draft Order Edit
+     * @request DELETE:/admin/draft-orders/{id}/edit/shipping-methods/method/{method_id}
+     * @secure
+     */
+    adminDeleteDraftOrdersIdEditShippingMethodsMethodMethodId: (
+      id: string,
+      methodId: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/shipping-methods/method/${methodId}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * @description Update a new shipping method that was added to a draft order edit using the `ID` of the method's `SHIPPING_ADD` action. Every shipping method has an `actions` property, whose value is an array of actions. You can check the action's name using its `action` property, and use the value of the `id` property.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminPostDraftOrdersIdEditShippingMethodsActionId
+     * @summary Update New Shipping Method in Draft Order Edit
+     * @request POST:/admin/draft-orders/{id}/edit/shipping-methods/{action_id}
+     * @secure
+     */
+    adminPostDraftOrdersIdEditShippingMethodsActionId: (
+      id: string,
+      actionId: string,
+      data: AdminUpdateDraftOrderActionShippingMethod,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/shipping-methods/${actionId}`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Remove a shipping method that was added to a draft order edit using the `ID` of the method's `SHIPPING_ADD` action. Every shipping method has an `actions` property, whose value is an array of actions. You can check the action's name using its `action` property, and use the value of the `id` property.
+     *
+     * @tags Admin Draft Orders
+     * @name AdminDeleteDraftOrdersIdEditShippingMethodsActionId
+     * @summary Remove New Shipping Method from Draft Order
+     * @request DELETE:/admin/draft-orders/{id}/edit/shipping-methods/{action_id}
+     * @secure
+     */
+    adminDeleteDraftOrdersIdEditShippingMethodsActionId: (id: string, actionId: string, params: RequestParams = {}) =>
+      this.request<void, Error | string>({
+        path: `/admin/draft-orders/${id}/edit/shipping-methods/${actionId}`,
+        method: "DELETE",
+        secure: true,
         ...params,
       }),
 
@@ -36151,7 +38132,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
               type: string;
               /**
                * province_code
-               * The geo zone's province code.
+               * The geo zone's ISO 3166-2 province code. Must be lower-case.
+               * @example "us-ca"
                */
               province_code: string;
             }
@@ -36171,7 +38153,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
               type: string;
               /**
                * province_code
-               * The geo zone's province code.
+               * The geo zone's ISO 3166-2 province code. Must be lower-case.
+               * @example "us-ca"
                */
               province_code: string;
               /**
@@ -36196,7 +38179,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
               type: string;
               /**
                * province_code
-               * The geo zone's province code.
+               * The geo zone's ISO 3166-2 province code. Must be lower-case.
+               * @example "us-ca"
                */
               province_code: string;
               /**
@@ -36315,7 +38299,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
               country_code: string;
               /**
                * province_code
-               * The geo zone's province code.
+               * The geo zone's ISO 3166-2 province code. Must be lower-case.
+               * @example "us-ca"
                */
               province_code: string;
               /**
@@ -36345,7 +38330,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
               country_code: string;
               /**
                * province_code
-               * The geo zone's province code.
+               * The geo zone's ISO 3166-2 province code. Must be lower-case.
+               * @example "us-ca"
                */
               province_code: string;
               /**
@@ -36375,7 +38361,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
               country_code: string;
               /**
                * province_code
-               * The geo zone's province code.
+               * The geo zone's ISO 3166-2 province code. Must be lower-case.
+               * @example "us-ca"
                */
               province_code: string;
               /** The geo zone's postal expression or ZIP code. */
@@ -37087,7 +39074,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       data: AdminBatchInventoryItemLocationsLevel,
       params: RequestParams = {},
     ) =>
-      this.request<any, Error | string>({
+      this.request<void, Error | string>({
         path: `/admin/inventory-items/${id}/location-levels/batch`,
         method: "POST",
         body: data,
@@ -38634,6 +40621,38 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Create a credit line for an order.
+     *
+     * @tags Admin Orders
+     * @name AdminPostOrdersIdCreditLines
+     * @summary Create Credit Line for Order
+     * @request POST:/admin/orders/{id}/credit-lines
+     * @secure
+     */
+    adminPostOrdersIdCreditLines: (
+      id: string,
+      data: AdminCreateOrderCreditLines,
+      query?: {
+        /**
+         * fields
+         * Comma-separated fields that should be included in the returned data. If a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. Without prefix it will replace the entire default fields.
+         */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<AdminOrderResponse, Error | string>({
+        path: `/admin/orders/${id}/credit-lines`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Create a fulfillment for an order. The creation fails if the order is canceled.
      *
      * @tags Admin Orders
@@ -39589,6 +41608,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Retrieve the list of plugins installed in the Medusa application.
+     *
+     * @tags Admin Plugins
+     * @name AdminGetPlugins
+     * @summary List Plugins
+     * @request GET:/admin/plugins
+     * @secure
+     */
+    adminGetPlugins: (params: RequestParams = {}) =>
+      this.request<AdminPluginsListResponse, Error | string>({
+        path: `/admin/plugins`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Retrieve a list of price lists. The price lists can be filtered by fields such as `id`. The price lists can also be sorted or paginated.
      *
      * @tags Admin Price Lists
@@ -40233,7 +42270,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
         /**
@@ -40553,7 +42590,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -40584,7 +42621,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
         /**
@@ -40662,7 +42699,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -40717,7 +42754,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. NOTE: This route doesn't allow expanding custom relations.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -42622,7 +44659,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     adminPostProductsImportTransactionIdConfirm: (transactionId: string, params: RequestParams = {}) =>
-      this.request<any, Error | string>({
+      this.request<void, Error | string>({
         path: `/admin/products/import/${transactionId}/confirm`,
         method: "POST",
         secure: true,
@@ -43872,6 +45909,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * Join query parameters with an OR condition. Each object's content is the same type as the expected query parameters.
          */
         $or?: object[];
+        /** Filter by a currency code. The promotions are filtered based on their application method's currency code. */
+        currency_code?: string | string[];
+        /** Filter by an application method type. The promotions are filtered based on their application method's type. */
+        application_method_type?: string | string[];
       },
       params: RequestParams = {},
     ) =>
@@ -44179,6 +46220,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     ) =>
       this.request<
         {
+          /**
+           * limit
+           * The maximum number of items returned.
+           */
+          limit: number;
+          /**
+           * offset
+           * The number of items skipped before retrieving the returned items.
+           */
+          offset: number;
+          /**
+           * count
+           * The total number of items.
+           */
+          count: number;
+        } & {
           /** The list of rule values. */
           values: AdminRuleValueOption[];
         },
@@ -50029,7 +52086,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
               /** Filter by values less than or equal to this parameter. Useful for numbers and dates only. */
               $lte?: string;
             };
-        /** Filter by a province code. */
+        /** Filter by a ISO 3166-2 province code. Must be lower-case. */
         province_code?:
           | string
           | string[]
@@ -51818,7 +53875,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         /** Comma-separated fields to include in the response. */
         fields?: string;
         /** Filter by request type */
-        type?: "product" | "product_collection" | "product_category" | "seller" | "review_remove" | "product_type";
+        type?:
+          | "product"
+          | "product_collection"
+          | "product_category"
+          | "seller"
+          | "review_remove"
+          | "product_type"
+          | "product_tag";
         /** Filter by request status */
         status?: "pending" | "rejected" | "accepted";
       },
@@ -52227,7 +54291,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Generate a reset password token for an admin user. This API route doesn't reset the admin's password or send them the reset instructions in a notification. Instead, This API route emits the `auth.password_reset` event, passing it the token as a payload. You can listen to that event in a subscriber as explained in [this guide](https://docs.medusajs.com/resources/commerce-modules/auth/reset-password), then send the user a notification. The notification is sent using a [Notification Module Provider](https://docs.medusajs.com/resources/architectural-modules/notification), and it should have the URL to reset the password in the Medusa Admin dashboard, such as `http://localhost:9000/app/reset-password?token=123`. Use the generated token to update the user's password using the [Reset Password API route](https://docs.medusajs.com/api/admin#auth_postactor_typeauth_providerupdate).
+     * @description Generate a reset password token for an admin user. This API route doesn't reset the admin's password or send them the reset instructions in a notification. Instead, This API route emits the `auth.password_reset` event, passing it the token as a payload. You can listen to that event in a subscriber as explained in [this guide](https://docs.medusajs.com/resources/commerce-modules/auth/reset-password), then send the user a notification. The notification is sent using a [Notification Module Provider](https://docs.medusajs.com/resources/infrastructure-modules/notification), and it should have the URL to reset the password in the Medusa Admin dashboard, such as `http://localhost:9000/app/reset-password?token=123`. Use the generated token to update the user's password using the [Reset Password API route](https://docs.medusajs.com/api/admin#auth_postactor_typeauth_providerupdate).
      *
      * @tags Admin Auth
      * @name AdminPostActorTypeAuthProviderResetPassword
@@ -52329,7 +54393,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Generate a reset password token for a customer. This API route doesn't reset the customer password or send them the reset instructions in a notification. Instead, This API route emits the `auth.password_reset` event, passing it the token as a payload. You can listen to that event in a subscriber as explained in [this guide](https://docs.medusajs.com/resources/commerce-modules/auth/reset-password), then send the customer a notification. The notification is sent using a [Notification Module Provider](https://docs.medusajs.com/resources/architectural-modules/notification), and it should have a URL that accepts a `token` query parameter, allowing the customer to reset their password from the storefront. Use the generated token to update the customer's password using the [Reset Password API route](https://docs.medusajs.com/api/store#auth_postactor_typeauth_providerupdate).
+     * @description Generate a reset password token for a customer. This API route doesn't reset the customer password or send them the reset instructions in a notification. Instead, This API route emits the `auth.password_reset` event, passing it the token as a payload. You can listen to that event in a subscriber as explained in [this guide](https://docs.medusajs.com/resources/commerce-modules/auth/reset-password), then send the customer a notification. The notification is sent using a [Notification Module Provider](https://docs.medusajs.com/resources/infrastructure-modules/notification), and it should have a URL that accepts a `token` query parameter, allowing the customer to reset their password from the storefront. Use the generated token to update the customer's password using the [Reset Password API route](https://docs.medusajs.com/api/store#auth_postactor_typeauth_providerupdate).
      *
      * @tags Store Auth
      * @name StorePostActorTypeAuthProviderResetPassword
@@ -52759,6 +54823,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     storeDeleteCartsIdPromotions: (
       id: string,
+      data: StoreCartRemovePromotion,
       query?: {
         /**
          * fields
@@ -52778,6 +54843,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/store/carts/${id}/promotions`,
         method: "DELETE",
         query: query,
+        body: data,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -53365,7 +55432,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -53395,7 +55462,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -53424,7 +55491,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -53454,7 +55521,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
         /**
@@ -53548,7 +55615,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         country_code?: string;
         /**
          * province
-         * The address's province.
+         * The address's ISO 3166-2 province code. Must be lower-case.
+         * @example "us-ca"
          */
         province?: string;
         /**
@@ -53577,7 +55645,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -53608,7 +55676,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -53677,7 +55745,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         country_code?: string;
         /**
          * province
-         * The address's province.
+         * The address's ISO 3166-2 province code. Must be lower-case.
+         * @example "us-ca"
          */
         province?: string;
         /**
@@ -53706,7 +55775,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -53737,7 +55806,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         /**
          * fields
-         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields.
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. This API route restricts the fields that can be selected. Learn how to override the retrievable fields in the [Retrieve Custom Links](https://docs.medusajs.com/learn/fundamentals/api-routes/retrieve-custom-links) documentation.
          */
         fields?: string;
       },
@@ -55725,7 +57794,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         region_id?: string;
         /**
          * province
-         * The province the products are being viewed from. This is useful to narrow down the tax context when calculating product variant prices with taxes.
+         * The lower-case ISO 3166-2 province code the products are being viewed from. This is useful to narrow down the tax context when calculating product variant prices with taxes.
+         * @example "us-ca"
          */
         province?: string;
         /** The ID of a sales channel to retrieve products in it. */
@@ -55819,7 +57889,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         country_code?: string;
         /**
          * province
-         * The province the product is being viewed from. This is useful to narrow down the tax context when calculating product variant prices with taxes.
+         * The lower-case ISO 3166-2 province code the product is being viewed from. This is useful to narrow down the tax context when calculating product variant prices with taxes.
+         * @example "us-ca"
          */
         province?: string;
         /**
@@ -56439,6 +58510,196 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+
+    /**
+     * @description Retrieves the seller list.
+     *
+     * @tags Store
+     * @name StoreGetSellers
+     * @summary Get sellers
+     * @request GET:/store/seller
+     * @secure
+     */
+    storeGetSellers: (
+      query?: {
+        /** The number of items to skip before starting to collect the result set. */
+        offset?: number;
+        /** The number of items to return. */
+        limit?: number;
+        /** Comma-separated fields to include in the response. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          products?: StoreSeller[];
+          /** The total number of items available */
+          count?: number;
+          /** The number of items skipped before these items */
+          offset?: number;
+          /** The number of items per page */
+          limit?: number;
+        },
+        any
+      >({
+        path: `/store/seller`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves seller of specified handle
+     *
+     * @tags Seller
+     * @name StoreGetSellerByHandle
+     * @summary Get seller
+     * @request GET:/store/seller/{handle}
+     * @secure
+     */
+    storeGetSellerByHandle: (
+      handle: string,
+      query?: {
+        /** Comma-separated fields to include in the response. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** A seller object with its properties */
+          product?: StoreSeller;
+        },
+        any
+      >({
+        path: `/store/seller/${handle}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves the wishlist created by the authenticated user.
+     *
+     * @tags Wishlist
+     * @name StoreGetMyWishlist
+     * @summary Get wishlist of the current user
+     * @request GET:/store/wishlist
+     * @secure
+     */
+    storeGetMyWishlist: (
+      query?: {
+        /** The number of items to skip before starting to collect the result set. */
+        offset?: number;
+        /** The number of items to return. */
+        limit?: number;
+        /** Comma-separated fields to include in the response. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          wishlists?: Wishlist[];
+          /** The total number of items available */
+          count?: number;
+          /** The number of items skipped before these items */
+          offset?: number;
+          /** The number of items per page */
+          limit?: number;
+        },
+        any
+      >({
+        path: `/store/wishlist`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Creates a new wishlist entry by specifying a reference type and reference ID.
+     *
+     * @tags Wishlist
+     * @name StoreCreateNewWishlist
+     * @summary Create new wishlist entry
+     * @request POST:/store/wishlist
+     * @secure
+     */
+    storeCreateNewWishlist: (
+      data: StoreCreateWishlist,
+      query?: {
+        /** Comma-separated fields to include in the response. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** Id of the wishlsit nad reference id. */
+          id?: string;
+          /**
+           * The date with timezone at which the resource was created.
+           * @format date-time
+           */
+          created_at?: string;
+          /**
+           * The date with timezone at which the resource was last updated.
+           * @format date-time
+           */
+          updated_at?: string;
+          /**
+           * The date with timezone at which the resource was deleted.
+           * @format date-time
+           */
+          deleted_at?: string;
+        },
+        any
+      >({
+        path: `/store/wishlist`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Deletes a wishlist entry by its ID for the authenticated user.
+     *
+     * @tags Wishlist
+     * @name StoreDeleteWishlist
+     * @summary Delete a wishlist entry
+     * @request DELETE:/store/wishlist/{id}/product/{reference_id}
+     * @secure
+     */
+    storeDeleteWishlist: (id: string, referenceId: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** Id of the wishlsit nad reference id. */
+          id?: string;
+          reference_id?: string;
+          /** The type of resource */
+          object?: string;
+          /** Indicates if the wishlist entry was deleted. */
+          deleted?: boolean;
+        },
+        any
+      >({
+        path: `/store/wishlist/${id}/product/${referenceId}`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
   };
   vendor = {
     /**
@@ -56611,6 +58872,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Retrieves marketplace rules list
+     *
+     * @tags Seller
+     * @name VendorListRules
+     * @summary List rules
+     * @request GET:/vendor/configuration
+     * @secure
+     */
+    vendorListRules: (params: RequestParams = {}) =>
+      this.request<
+        {
+          configuration_rules?: ConfigurationRule[];
+        },
+        any
+      >({
+        path: `/vendor/configuration`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Retrieves a list of customer groups.
      *
      * @tags Seller
@@ -56646,6 +58930,144 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Creates a new customer group
+     *
+     * @tags Seller
+     * @name VendorCreateCustomerGroup
+     * @summary Create a customer group
+     * @request POST:/vendor/customer-groups
+     * @secure
+     */
+    vendorCreateCustomerGroup: (data: VendorCreateCustomerGroup, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** Customer group details. */
+          customer_group?: VendorCustomerGroup;
+        },
+        any
+      >({
+        path: `/vendor/customer-groups`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieve customer group by id
+     *
+     * @tags Seller
+     * @name VendorGetCustomerGroupById
+     * @summary Retrieve customer group by id
+     * @request GET:/vendor/customer-groups/{id}
+     * @secure
+     */
+    vendorGetCustomerGroupById: (
+      id: string,
+      query?: {
+        /** Comma-separated fields that should be included in the returned data. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** Customer group details. */
+          member?: VendorCustomerGroup;
+        },
+        any
+      >({
+        path: `/vendor/customer-groups/${id}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Updates customer group
+     *
+     * @tags Seller
+     * @name VendorUpdateCustomerGroup
+     * @summary Update customer group
+     * @request POST:/vendor/customer-groups/{id}
+     * @secure
+     */
+    vendorUpdateCustomerGroup: (id: string, data: VendorCreateCustomerGroup, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** Customer group details. */
+          customer_group?: VendorCustomerGroup;
+        },
+        any
+      >({
+        path: `/vendor/customer-groups/${id}`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Deletes a customer group by id.
+     *
+     * @tags Seller
+     * @name VendorDeleteCustomerGroupById
+     * @summary Delete a customer group
+     * @request DELETE:/vendor/customer-groups/{id}
+     * @secure
+     */
+    vendorDeleteCustomerGroupById: (id: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** The ID of the deleted Customer group */
+          id?: string;
+          /** The type of the object that was deleted */
+          object?: string;
+          /** Whether or not the items were deleted */
+          deleted?: boolean;
+        },
+        any
+      >({
+        path: `/vendor/customer-groups/${id}`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Adds or removes customers to a customer group
+     *
+     * @tags Seller
+     * @name VendorUpdateCustomersInCustomerGroup
+     * @summary Link customers to customer group
+     * @request POST:/vendor/customer-groups/{id}/customers
+     * @secure
+     */
+    vendorUpdateCustomersInCustomerGroup: (id: string, data: VendorLinkCustomersToGroup, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** Customer group details. */
+          customer_group?: VendorCustomerGroup;
+        },
+        any
+      >({
+        path: `/vendor/customer-groups/${id}/customers`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -56710,6 +59132,36 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/vendor/customers/${id}`,
         method: "GET",
         secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Adds or removes customer groups to a customer
+     *
+     * @tags Seller
+     * @name VendorLinkCustomerToCustomerGroups
+     * @summary Link customers to customer group
+     * @request POST:/vendor/customers/{id}/customer-groups
+     * @secure
+     */
+    vendorLinkCustomerToCustomerGroups: (
+      id: string,
+      data: VendorUpdateCustomersCustomerGroups,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** Customer who placed an order in sellers store. */
+          customer?: VendorCustomer;
+        },
+        any
+      >({
+        path: `/vendor/customers/${id}/customer-groups`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -56790,6 +59242,32 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/vendor/fulfillment-providers`,
         method: "GET",
         query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves a list of available Fulfillment Provider Options.
+     *
+     * @tags Stock Location
+     * @name VendorListFulfillmentProviderOptions
+     * @summary List Fulfillment Provider Options
+     * @request GET:/vendor/fulfillment-providers/{id}/options
+     * @secure
+     */
+    vendorListFulfillmentProviderOptions: (id: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          fulfillment_options?: {
+            id?: string;
+            is_return?: boolean;
+          }[];
+        },
+        any
+      >({
+        path: `/vendor/fulfillment-providers/${id}/options`,
+        method: "GET",
         secure: true,
         format: "json",
         ...params,
@@ -56938,6 +59416,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Batch updates InventoryItem levels
+     *
+     * @tags Product
+     * @name VendorBatchInventoryItemLevels
+     * @summary Update inventory item levels
+     * @request POST:/vendor/inventory-items/location-levels/batch
+     * @secure
+     */
+    vendorBatchInventoryItemLevels: (data: VendorBatchInventoryItemLevels, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/vendor/inventory-items/location-levels/batch`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
      * @description Retrieves InventoryItem of specified id
      *
      * @tags Product
@@ -57002,6 +59499,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     vendorCreateInventoryLevel: (id: string, data: VendorCreateInventoryLevel, params: RequestParams = {}) =>
       this.request<void, any>({
         path: `/vendor/inventory-items/${id}/location-levels`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Batch updates InventoryItem levels
+     *
+     * @tags Product
+     * @name VendorBatchInventoryItemLocationsLevels
+     * @summary Update inventory item levels
+     * @request POST:/vendor/inventory-items/{id}/location-levels/batch
+     * @secure
+     */
+    vendorBatchInventoryItemLocationsLevels: (
+      id: string,
+      data: VendorBatchInventoryItemLocationsLevel,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, any>({
+        path: `/vendor/inventory-items/${id}/location-levels/batch`,
         method: "POST",
         body: data,
         secure: true,
@@ -57391,6 +59911,37 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Retrieves a list of order changes for the authenticated vendor.
+     *
+     * @tags Order
+     * @name VendorListOrderChanges
+     * @summary List Order Changes
+     * @request GET:/vendor/orders/{id}/changes
+     * @secure
+     */
+    vendorListOrderChanges: (
+      id: string,
+      query?: {
+        /** Comma-separated fields to include in the response. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          order_changes?: VendorOrderChange[];
+        },
+        any
+      >({
+        path: `/vendor/orders/${id}/changes`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Mark order as complete.
      *
      * @tags Order
@@ -57410,6 +59961,85 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/vendor/orders/${id}/complete`,
         method: "POST",
         secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Cancel order fulfillment.
+     *
+     * @tags Order
+     * @name VendorCancelOrderFulfillment
+     * @summary Cancel order fulfillment.
+     * @request POST:/vendor/orders/{id}/fulfillments/{fulfillment_id}/cancel
+     * @secure
+     */
+    vendorCancelOrderFulfillment: (id: string, fulfillmentId: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** The order's details. */
+          member?: VendorOrderDetails;
+        },
+        any
+      >({
+        path: `/vendor/orders/${id}/fulfillments/${fulfillmentId}/cancel`,
+        method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Mark order fulfillment shipment as delivered.
+     *
+     * @tags Order
+     * @name VendorOrderFulfillmentMarkDelivered
+     * @summary Mark order fulfillment shipment as delivered.
+     * @request POST:/vendor/orders/{id}/fulfillments/{fulfillment_id}/mark-as-delivered
+     * @secure
+     */
+    vendorOrderFulfillmentMarkDelivered: (id: string, fulfillmentId: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** The order's details. */
+          member?: VendorOrderDetails;
+        },
+        any
+      >({
+        path: `/vendor/orders/${id}/fulfillments/${fulfillmentId}/mark-as-delivered`,
+        method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Update order fulfillment shipment.
+     *
+     * @tags Order
+     * @name VendorUpdateOrderFulfillmentShipment
+     * @summary Update order fulfillment shipment.
+     * @request POST:/vendor/orders/{id}/fulfillments/{fulfillment_id}/shipments
+     * @secure
+     */
+    vendorUpdateOrderFulfillmentShipment: (
+      id: string,
+      fulfillmentId: string,
+      data: VendorOrderCreateShipment,
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The order's details. */
+          member?: VendorOrderDetails;
+        },
+        any
+      >({
+        path: `/vendor/orders/${id}/fulfillments/${fulfillmentId}/shipments`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -57722,6 +60352,226 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Retrieves a list of products in the given price list.
+     *
+     * @tags Price Lists
+     * @name VendorListProductsInPriceList
+     * @summary List Products in a given price list
+     * @request GET:/vendor/price-lists/{id}/products
+     * @secure
+     */
+    vendorListProductsInPriceList: (
+      id: string,
+      query?: {
+        /** The number of items to skip before starting to collect the result set. */
+        offset?: number;
+        /** The number of items to return. */
+        limit?: number;
+        /** Comma-separated fields to include in the response. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          products?: VendorProduct[];
+          /** The total number of items available */
+          count?: number;
+          /** The number of items skipped before these items */
+          offset?: number;
+          /** The number of items per page */
+          limit?: number;
+        },
+        any
+      >({
+        path: `/vendor/price-lists/${id}/products`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Updates price list price
+     *
+     * @tags Price Lists
+     * @name VendorRemoveProductsFromPriceList
+     * @summary Update price list
+     * @request POST:/vendor/price-lists/{id}/products
+     * @secure
+     */
+    vendorRemoveProductsFromPriceList: (
+      id: string,
+      data: VendorRemoveProductsFromPriceList,
+      query?: {
+        /** Comma-separated fields to include in the response. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The price list's details. */
+          price_list?: VendorPriceList;
+        },
+        any
+      >({
+        path: `/vendor/price-lists/${id}/products`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves a list of product categories.
+     *
+     * @tags Product
+     * @name VendorListProductCategories
+     * @summary List product categories
+     * @request GET:/vendor/product-categories
+     * @secure
+     */
+    vendorListProductCategories: (
+      query?: {
+        /** The comma-separated fields to include in the response */
+        fields?: string;
+        /** The number of items to skip before starting to collect the result set. */
+        offset?: number;
+        /** The number of items to return. */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          product_categories?: VendorProductCategory[];
+          /** The total number of items available */
+          count?: number;
+          /** The number of items skipped before these items */
+          offset?: number;
+          /** The number of items per page */
+          limit?: number;
+        },
+        any
+      >({
+        path: `/vendor/product-categories`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves product category by id.
+     *
+     * @tags Product
+     * @name VendorGetProductCategoryById
+     * @summary Get product category
+     * @request GET:/vendor/product-categories/{id}
+     * @secure
+     */
+    vendorGetProductCategoryById: (
+      id: string,
+      query?: {
+        /** The comma-separated fields to include in the response */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** A product category object with its properties */
+          product_category?: VendorProductCategory;
+        },
+        any
+      >({
+        path: `/vendor/product-categories/${id}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves a list of product collections.
+     *
+     * @tags Product
+     * @name VendorListProductCollections
+     * @summary List product collections
+     * @request GET:/vendor/product-collections
+     * @secure
+     */
+    vendorListProductCollections: (
+      query?: {
+        /** The comma-separated fields to include in the response */
+        fields?: string;
+        /** The number of items to skip before starting to collect the result set. */
+        offset?: number;
+        /** The number of items to return. */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          product_collections?: VendorProductCollection[];
+          /** The total number of items available */
+          count?: number;
+          /** The number of items skipped before these items */
+          offset?: number;
+          /** The number of items per page */
+          limit?: number;
+        },
+        any
+      >({
+        path: `/vendor/product-collections`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves product collection by id.
+     *
+     * @tags Product
+     * @name VendorGetProductCollectionById
+     * @summary Get product collection
+     * @request GET:/vendor/product-collections/{id}
+     * @secure
+     */
+    vendorGetProductCollectionById: (
+      id: string,
+      query?: {
+        /** The comma-separated fields to include in the response */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** A product collection object with its properties */
+          product_collection?: VendorProductCollection;
+        },
+        any
+      >({
+        path: `/vendor/product-collections/${id}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Retrieves a list of product tags.
      *
      * @tags Product
@@ -57757,40 +60607,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "GET",
         query: query,
         secure: true,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * @description Creates new product tag
-     *
-     * @tags Product
-     * @name VendorCreateProductTag
-     * @summary Create product tag
-     * @request POST:/vendor/product-tags
-     * @secure
-     */
-    vendorCreateProductTag: (
-      data: VendorCreateProductTag,
-      query?: {
-        /** Comma-separated fields to include in the response. */
-        fields?: string;
-      },
-      params: RequestParams = {},
-    ) =>
-      this.request<
-        {
-          /** A product tag object with its properties */
-          product_tag?: VendorProductTag;
-        },
-        any
-      >({
-        path: `/vendor/product-tags`,
-        method: "POST",
-        query: query,
-        body: data,
-        secure: true,
-        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -58103,7 +60919,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Order
      * @name VendorCreateFulfillment
      * @summary Update a Product
-     * @request POST:/vendor/products/{id}/fulfillment
+     * @request POST:/vendor/products/{id}/fulfillments
      * @secure
      */
     vendorCreateFulfillment: (id: string, data: VendorCreateFulfillment, params: RequestParams = {}) =>
@@ -58114,7 +60930,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         },
         any
       >({
-        path: `/vendor/products/${id}/fulfillment`,
+        path: `/vendor/products/${id}/fulfillments`,
         method: "POST",
         body: data,
         secure: true,
@@ -58218,6 +61034,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/vendor/products/${id}/options/${optionId}`,
         method: "DELETE",
         secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Updates an existing product status for the authenticated vendor.
+     *
+     * @tags Product
+     * @name VendorUpdateProductStatusById
+     * @summary Update a Product status
+     * @request POST:/vendor/products/{id}/status
+     * @secure
+     */
+    vendorUpdateProductStatusById: (
+      id: string,
+      data: VendorUpdateProductStatus,
+      query?: {
+        /** Comma-separated fields to include in the response. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** A product object with its properties */
+          product?: VendorProduct;
+        },
+        any
+      >({
+        path: `/vendor/products/${id}/status`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -58388,6 +61239,46 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Retrieve a list of potential rule attributes for the promotion and application method types specified in the query parameters.
+     *
+     * @tags Promotions
+     * @name VendorGetPromotionsRuleAttributeOptionsRule
+     * @summary List Rule Attribute Options of a Rule Type
+     * @request GET:/vendor/promotions/rule-attribute-options/{rule_type}
+     * @secure
+     */
+    vendorGetPromotionsRuleAttributeOptionsRule: (
+      ruleType: "rules" | "target-rules" | "buy-rules",
+      query?: {
+        /**
+         * promotion_type
+         * The promotion type to retrieve rules for.
+         */
+        promotion_type?: "standard" | "buyget";
+        /**
+         * application_method_type
+         * The application method type to retrieve rules for.
+         */
+        application_method_type?: "fixed" | "percentage";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The list of attributes. */
+          attributes?: VendorRuleAttributeOption[];
+        },
+        any
+      >({
+        path: `/vendor/promotions/rule-attribute-options/${ruleType}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Retrieves promotion by id for the authenticated vendor.
      *
      * @tags Promotion
@@ -58420,6 +61311,32 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Updates a new promotion for the authenticated vendor.
+     *
+     * @tags Promotion
+     * @name VendorUpdatePromotion
+     * @summary Update promotion
+     * @request POST:/vendor/promotions/{id}
+     * @secure
+     */
+    vendorUpdatePromotion: (id: string, data: VendorUpdatePromotion, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** Promotion object */
+          promotion?: VendorPromotion;
+        },
+        any
+      >({
+        path: `/vendor/promotions/${id}`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Deletes promotion by id for the authenticated vendor.
      *
      * @tags Promotion
@@ -58442,6 +61359,192 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       >({
         path: `/vendor/promotions/${id}`,
         method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Performs batch create/delete operation on buy-rules
+     *
+     * @tags Promotion
+     * @name VendorBatchBuyRules
+     * @summary Batch buy rules
+     * @request POST:/vendor/promotions/{id}/buy-rules/batch
+     * @secure
+     */
+    vendorBatchBuyRules: (id: string, data: VendorBatchPromotionRule, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** Promotion object */
+          promotion?: VendorPromotion;
+        },
+        any
+      >({
+        path: `/vendor/promotions/${id}/buy-rules/batch`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Performs batch create/delete operation on rules
+     *
+     * @tags Promotion
+     * @name VendorBatchRules
+     * @summary Batch rules
+     * @request POST:/vendor/promotions/{id}/rules/batch
+     * @secure
+     */
+    vendorBatchRules: (id: string, data: VendorBatchPromotionRule, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** Promotion object */
+          promotion?: VendorPromotion;
+        },
+        any
+      >({
+        path: `/vendor/promotions/${id}/rules/batch`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Performs batch create/delete operation on target-rules
+     *
+     * @tags Promotion
+     * @name VendorBatchTargetRules
+     * @summary Batch target rules
+     * @request POST:/vendor/promotions/{id}/target-rules/batch
+     * @secure
+     */
+    vendorBatchTargetRules: (id: string, data: VendorBatchPromotionRule, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** Promotion object */
+          promotion?: VendorPromotion;
+        },
+        any
+      >({
+        path: `/vendor/promotions/${id}/target-rules/batch`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieve a list of rules in a promotion.
+     *
+     * @tags Promotions
+     * @name VendorGetPromotionsIdRuleType
+     * @summary List Rules of a Promotion
+     * @request GET:/vendor/promotions/{id}/{rule_type}
+     * @secure
+     */
+    vendorGetPromotionsIdRuleType: (
+      id: string,
+      ruleType: "rules" | "target-rules" | "buy-rules",
+      query?: {
+        /**
+         * fields
+         * Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields.
+         */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The list of promotion rules. */
+          rules?: VendorPromotionRule[];
+        },
+        any
+      >({
+        path: `/vendor/promotions/${id}/${ruleType}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves a list of regions.
+     *
+     * @tags Region
+     * @name VendorListRegions
+     * @summary List regions
+     * @request GET:/vendor/regions
+     * @secure
+     */
+    vendorListRegions: (
+      query?: {
+        /** The comma-separated fields to include in the response */
+        fields?: string;
+        /** The number of items to skip before starting to collect the result set. */
+        offset?: number;
+        /** The number of items to return. */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          regions?: VendorRegion[];
+          /** The total number of items available */
+          count?: number;
+          /** The number of items skipped before these items */
+          offset?: number;
+          /** The number of items per page */
+          limit?: number;
+        },
+        any
+      >({
+        path: `/vendor/regions`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves region by id.
+     *
+     * @tags Region
+     * @name VendorGetRegionById
+     * @summary Get region
+     * @request GET:/vendor/regions/{id}
+     * @secure
+     */
+    vendorGetRegionById: (
+      id: string,
+      query?: {
+        /** The comma-separated fields to include in the response */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** Region object */
+          region?: VendorRegion;
+        },
+        any
+      >({
+        path: `/vendor/regions/${id}`,
+        method: "GET",
+        query: query,
         secure: true,
         format: "json",
         ...params,
@@ -58542,6 +61645,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Updates specified request payload.
+     *
+     * @tags Requests
+     * @name VendorUpdateRequestData
+     * @summary Update request data
+     * @request POST:/vendor/requests/{id}
+     * @secure
+     */
+    vendorUpdateRequestData: (
+      id: string,
+      data: VendorUpdateRequestData,
+      query?: {
+        /** The comma-separated fields to include in the response */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** A request object */
+          request?: VendorRequest;
+        },
+        any
+      >({
+        path: `/vendor/requests/${id}`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Retrieves a list of reservations for the authenticated vendor.
      *
      * @tags Reservations
@@ -58577,6 +61715,40 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Creates new reservation
+     *
+     * @tags Reservations
+     * @name VendorCreateReservation
+     * @summary Create reservation
+     * @request POST:/vendor/reservations
+     * @secure
+     */
+    vendorCreateReservation: (
+      data: VendorCreateReservation,
+      query?: {
+        /** Comma-separated fields to include in the response. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The reservation's details. */
+          reservation?: VendorReservation;
+        },
+        any
+      >({
+        path: `/vendor/reservations`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -58770,6 +61942,353 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves a list of returns for the authenticated vendor.
+     *
+     * @tags Return
+     * @name VendorListReturns
+     * @summary List Returns
+     * @request GET:/vendor/returns
+     * @secure
+     */
+    vendorListReturns: (
+      query?: {
+        /** The number of items to skip before starting to collect the result set. */
+        offset?: number;
+        /** The number of items to return. */
+        limit?: number;
+        /** Comma-separated fields to include in the response. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          returns?: VendorReturn[];
+          /** The total number of items available */
+          count?: number;
+          /** The number of items skipped before these items */
+          offset?: number;
+          /** The number of items per page */
+          limit?: number;
+        },
+        any
+      >({
+        path: `/vendor/returns`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves return by id for the authenticated vendor.
+     *
+     * @tags Return
+     * @name VendorGetReturnById
+     * @summary Get return
+     * @request GET:/vendor/returns/{id}
+     * @secure
+     */
+    vendorGetReturnById: (
+      id: string,
+      query?: {
+        /** Comma-separated fields to include in the response. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The return's details. */
+          return?: VendorReturn;
+        },
+        any
+      >({
+        path: `/vendor/returns/${id}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Add damaged items, whose quantity is to be dismissed, to a return.
+     *
+     * @tags Return
+     * @name VendorAddDismissReturnItemById
+     * @summary Add Damaged Item to Return
+     * @request POST:/vendor/returns/{id}/dismiss-items
+     * @secure
+     */
+    vendorAddDismissReturnItemById: (
+      id: string,
+      data: VendorReceiveReturnItems,
+      query?: {
+        /** Comma-separated fields that should be included in the returned data. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The return's details. */
+          return?: VendorReturn;
+        },
+        any
+      >({
+        path: `/vendor/returns/${id}/dismiss-items`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Update a damaged item, whose quantity is to be dismissed, in the return by the ID of the  item's `RECEIVE_DAMAGED_RETURN_ITEM` action.
+     *
+     * @tags Return
+     * @name VendorUpdateDismissReturnItemById
+     * @summary Update Damaged Item of Return
+     * @request POST:/vendor/returns/{id}/dismiss-items/{action_id}
+     * @secure
+     */
+    vendorUpdateDismissReturnItemById: (
+      id: string,
+      actionId: string,
+      data: VendorReturnsDismissItemsAction,
+      query?: {
+        /** Comma-separated fields that should be included in the returned data. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The return's details. */
+          return?: VendorReturn;
+        },
+        any
+      >({
+        path: `/vendor/returns/${id}/dismiss-items/${actionId}`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Remove a damaged item, whose quantity is to be dismissed, in the return by the ID of the  item's `RECEIVE_DAMAGED_RETURN_ITEM` action.
+     *
+     * @tags Return
+     * @name VendorDismissReturnItemById
+     * @summary Remove Damaged Item from Return
+     * @request DELETE:/vendor/returns/{id}/dismiss-items/{action_id}
+     * @secure
+     */
+    vendorDismissReturnItemById: (
+      id: string,
+      actionId: string,
+      query?: {
+        /** Comma-separated fields that should be included in the returned data. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The return's details. */
+          return?: VendorReturn;
+        },
+        any
+      >({
+        path: `/vendor/returns/${id}/dismiss-items/${actionId}`,
+        method: "DELETE",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Start a return receival process to be later confirmed.
+     *
+     * @tags Return
+     * @name VendorReturnReceiveById
+     * @summary Start Return Receival
+     * @request POST:/vendor/returns/{id}/receive
+     * @secure
+     */
+    vendorReturnReceiveById: (
+      id: string,
+      data: VendorReceiveReturn,
+      query?: {
+        /** Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The return's details. */
+          return?: VendorReturn;
+        },
+        any
+      >({
+        path: `/vendor/returns/${id}/receive`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Add received items to return.
+     *
+     * @tags Return
+     * @name VendorAddReceiveReturnItemById
+     * @summary Add received Item to Return
+     * @request POST:/vendor/returns/{id}/receive-items
+     * @secure
+     */
+    vendorAddReceiveReturnItemById: (
+      id: string,
+      data: VendorReceiveReturnItems,
+      query?: {
+        /** Comma-separated fields that should be included in the returned data. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The return's details. */
+          return?: VendorReturn;
+        },
+        any
+      >({
+        path: `/vendor/returns/${id}/receive-items`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Update a received item.
+     *
+     * @tags Return
+     * @name VendorUpdateReceiveReturnItemById
+     * @summary Update received Item of Return
+     * @request POST:/vendor/returns/{id}/receive-items/{action_id}
+     * @secure
+     */
+    vendorUpdateReceiveReturnItemById: (
+      id: string,
+      actionId: string,
+      data: VendorReturnsReceiveItemsAction,
+      query?: {
+        /** Comma-separated fields that should be included in the returned data. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The return's details. */
+          return?: VendorReturn;
+        },
+        any
+      >({
+        path: `/vendor/returns/${id}/receive-items/${actionId}`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Remove a received item
+     *
+     * @tags Return
+     * @name VendorReceiveReturnItemById
+     * @summary Remove received Item from Return
+     * @request DELETE:/vendor/returns/{id}/receive-items/{action_id}
+     * @secure
+     */
+    vendorReceiveReturnItemById: (
+      id: string,
+      actionId: string,
+      query?: {
+        /** Comma-separated fields that should be included in the returned data. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The return's details. */
+          return?: VendorReturn;
+        },
+        any
+      >({
+        path: `/vendor/returns/${id}/receive-items/${actionId}`,
+        method: "DELETE",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Confirm a return receival process.
+     *
+     * @tags Return
+     * @name VendorConfirmReturnReceiveById
+     * @summary Confirm Return Receival
+     * @request POST:/vendor/returns/{id}/receive/confirm
+     * @secure
+     */
+    vendorConfirmReturnReceiveById: (
+      id: string,
+      query?: {
+        /** Comma-separated fields that should be included in the returned data. if a field is prefixed with `+` it will be added to the default fields, using `-` will remove it from the default fields. without prefix it will replace the entire default fields. */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The return's details. */
+          return?: VendorReturn;
+        },
+        any
+      >({
+        path: `/vendor/returns/${id}/receive/confirm`,
+        method: "POST",
+        query: query,
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -59163,6 +62682,165 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Retrieves a list of shipping profiles.
+     *
+     * @tags Shipping
+     * @name VendorListShippingProfiles
+     * @summary List shipping profiles
+     * @request GET:/vendor/shipping-profiles
+     * @secure
+     */
+    vendorListShippingProfiles: (
+      query?: {
+        /** The comma-separated fields to include in the response */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          shipping_profiles?: VendorShippingProfile[];
+        },
+        any
+      >({
+        path: `/vendor/shipping-profiles`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Creates a Shipping profile.
+     *
+     * @tags Shipping
+     * @name VendorCreateShippingProfile
+     * @summary Create a Shipping profile
+     * @request POST:/vendor/shipping-profiles
+     * @secure
+     */
+    vendorCreateShippingProfile: (
+      data: VendorCreateShippingProfile,
+      query?: {
+        /** The comma-separated fields to include in the response */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The shipping profile details. */
+          shipping_profile?: VendorShippingProfile;
+        },
+        any
+      >({
+        path: `/vendor/shipping-profiles`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Retrieves a shipping profile by id.
+     *
+     * @tags Shipping
+     * @name VendorGetShippingProfile
+     * @summary Get shipping profile
+     * @request GET:/vendor/shipping-profiles/{id}
+     * @secure
+     */
+    vendorGetShippingProfile: (
+      id: string,
+      query?: {
+        /** The comma-separated fields to include in the response */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The shipping profile details. */
+          shipping_profile?: VendorShippingProfile;
+        },
+        any
+      >({
+        path: `/vendor/shipping-profiles/${id}`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Updates a Shipping profile.
+     *
+     * @tags Shipping
+     * @name VendorUpdateShippingProfile
+     * @summary Update a Shipping profile
+     * @request POST:/vendor/shipping-profiles/{id}
+     * @secure
+     */
+    vendorUpdateShippingProfile: (
+      id: string,
+      data: VendorUpdateShippingProfile,
+      query?: {
+        /** The comma-separated fields to include in the response */
+        fields?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<
+        {
+          /** The shipping profile details. */
+          shipping_profile?: VendorShippingProfile;
+        },
+        any
+      >({
+        path: `/vendor/shipping-profiles/${id}`,
+        method: "POST",
+        query: query,
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Deletes shipping profile by id for the authenticated vendor.
+     *
+     * @tags Shipping
+     * @name VendorDeleteShippingProfileById
+     * @summary Delete shipping profile
+     * @request DELETE:/vendor/shipping-profiles/{id}
+     * @secure
+     */
+    vendorDeleteShippingProfileById: (id: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** The ID of the deleted resource */
+          id?: string;
+          /** The type of the object that was deleted */
+          object?: string;
+          /** Whether or not the items were deleted */
+          deleted?: boolean;
+        },
+        any
+      >({
+        path: `/vendor/shipping-profiles/${id}`,
+        method: "DELETE",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
      * @description Retrieves store statistics.
      *
      * @tags Seller
@@ -59320,6 +62998,34 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Deletes stock location by id for the authenticated vendor.
+     *
+     * @tags Stock Location
+     * @name VendorDeleteStockLocationById
+     * @summary Delete stock location
+     * @request DELETE:/vendor/stock-locations/{id}
+     * @secure
+     */
+    vendorDeleteStockLocationById: (id: string, params: RequestParams = {}) =>
+      this.request<
+        {
+          /** The ID of the deleted resource */
+          id?: string;
+          /** The type of the object that was deleted */
+          object?: string;
+          /** Whether or not the items were deleted */
+          deleted?: boolean;
+        },
+        any
+      >({
+        path: `/vendor/stock-locations/${id}`,
+        method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),

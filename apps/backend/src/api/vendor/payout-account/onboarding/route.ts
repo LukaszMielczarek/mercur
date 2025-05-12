@@ -1,9 +1,8 @@
-import { fetchSellerByAuthActorId } from '#/shared/infra/http/utils'
-import { createOnboardingForSellerWorkflow } from '#/workflows/seller/workflows'
-
 import { AuthenticatedMedusaRequest, MedusaResponse } from '@medusajs/framework'
 import { ContainerRegistrationKeys } from '@medusajs/framework/utils'
 
+import { fetchSellerByAuthActorId } from '../../../../shared/infra/http/utils'
+import { createOnboardingForSellerWorkflow } from '../../../../workflows/seller/workflows'
 import { VendorCreateOnboardingType } from '../validators'
 
 /**
@@ -56,7 +55,7 @@ export const POST = async (
   } = await query.graph(
     {
       entity: 'payout_account',
-      fields: req.remoteQueryConfig.fields,
+      fields: req.queryConfig.fields,
       filters: {
         onboarding_id: result.id
       }

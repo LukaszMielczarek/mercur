@@ -1,7 +1,7 @@
-import { unlessBaseUrl } from '#/shared/infra/http/utils'
-
 import { MiddlewareRoute, authenticate } from '@medusajs/framework'
 
+import { checkSellerActive } from '../../shared/infra/http/middlewares/check-seller-active'
+import { unlessBaseUrl } from '../../shared/infra/http/utils'
 import { vendorCampaignsMiddlewares } from './campaigns/middlewares'
 import { vendorCors } from './cors'
 import { vendorCustomerGroupsMiddlewares } from './customer-groups/middlewares'
@@ -16,16 +16,21 @@ import { vendorOrderMiddlewares } from './orders/middlewares'
 import { vendorPayoutAccountMiddlewares } from './payout-account/middlewares'
 import { vendorPayoutMiddlewares } from './payouts/middlewares'
 import { vendorPriceListsMiddlewares } from './price-lists/middlewares'
+import { vendorProductCategoriesMiddlewares } from './product-categories/middlewares'
+import { vendorProductCollectionsMiddlewares } from './product-collections/middlewares'
 import { vendorProductTagsMiddlewares } from './product-tags/middlewares'
 import { vendorProductTypesMiddlewares } from './product-types/middlewares'
 import { vendorProductsMiddlewares } from './products/middlewares'
 import { vendorPromotionsMiddlewares } from './promotions/middlewares'
+import { vendorRegionsMiddlewares } from './regions/middlewares'
 import { vendorRequestsMiddlewares } from './requests/middlewares'
 import { vendorReservationsMiddlewares } from './reservations/middlewares'
 import { vendorReturnRequestsMiddlewares } from './return-request/middlewares'
+import { vendorReturnsMiddlewares } from './returns/middlewares'
 import { vendorSalesChannelMiddlewares } from './sales-channels/middlewares'
 import { vendorSellersMiddlewares } from './sellers/middlewares'
 import { vendorShippingOptionsMiddlewares } from './shipping-options/middlewares'
+import { vendorShippingProfilesMiddlewares } from './shipping-profiles/middlewares'
 import { vendorStatisticsMiddlewares } from './statistics/middlewares'
 import { vendorStockLocationsMiddlewares } from './stock-locations/middlewares'
 import { vendorStoresMiddlewares } from './stores/middlewares'
@@ -60,6 +65,10 @@ export const vendorMiddlewares: MiddlewareRoute[] = [
     middlewares: [
       unlessBaseUrl(
         /^\/vendor\/(sellers|invites\/accept)$/,
+        checkSellerActive(['bearer', 'session'])
+      ),
+      unlessBaseUrl(
+        /^\/vendor\/(sellers|invites\/accept)$/,
         authenticate('seller', ['bearer', 'session'], {
           allowUnregistered: false
         })
@@ -87,6 +96,8 @@ export const vendorMiddlewares: MiddlewareRoute[] = [
   ...vendorStoresMiddlewares,
   ...vendorProductTagsMiddlewares,
   ...vendorProductTypesMiddlewares,
+  ...vendorProductCategoriesMiddlewares,
+  ...vendorProductCollectionsMiddlewares,
   ...vendorUploadMiddlewares,
   ...vendorPromotionsMiddlewares,
   ...vendorReservationsMiddlewares,
@@ -94,5 +105,8 @@ export const vendorMiddlewares: MiddlewareRoute[] = [
   ...vendorPromotionsMiddlewares,
   ...vendorCampaignsMiddlewares,
   ...vendorStatisticsMiddlewares,
-  ...vendorFulfillmentProvidersMiddlewares
+  ...vendorFulfillmentProvidersMiddlewares,
+  ...vendorReturnsMiddlewares,
+  ...vendorShippingProfilesMiddlewares,
+  ...vendorRegionsMiddlewares
 ]

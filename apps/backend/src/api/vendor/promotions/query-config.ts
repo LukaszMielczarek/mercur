@@ -27,3 +27,28 @@ export const vendorPromotionQueryConfig = {
     isList: false
   }
 }
+
+export const defaultVendorPromotionRuleFields = [
+  'id',
+  'description',
+  'attribute',
+  'operator',
+  'values.value'
+]
+
+export const vendorRuleTransformQueryConfig = {
+  list: {
+    defaults: defaultVendorPromotionRuleFields,
+    isList: true
+  },
+  retrieve: {
+    defaults: defaultVendorPromotionRuleFields,
+    isList: false
+  }
+}
+
+export const listRuleValueTransformQueryConfig = {
+  defaults: [],
+  allowed: [],
+  isList: true
+}

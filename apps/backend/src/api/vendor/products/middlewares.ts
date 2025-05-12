@@ -1,4 +1,7 @@
+import multer from 'multer'
+
 import {
+  unlessPath,
   validateAndTransformBody,
   validateAndTransformQuery
 } from '@medusajs/framework'
@@ -20,13 +23,16 @@ import {
   VendorAssignBrandName,
   VendorCreateProduct,
   VendorGetProductParams,
-  VendorUpdateProduct
+  VendorUpdateProduct,
+  VendorUpdateProductStatus
 } from './validators'
 
 const canVendorCreateProduct = [
   checkConfigurationRule(ConfigurationRuleType.GLOBAL_PRODUCT_CATALOG, false),
-  checkConfigurationRule(ConfigurationRuleType.REQUIRE_PRODUCT_APPROVAL, false)
+  checkConfigurationRule(ConfigurationRuleType.PRODUCT_REQUEST_ENABLED, true)
 ]
+
+const upload = multer({ storage: multer.memoryStorage() })
 
 export const vendorProductsMiddlewares: MiddlewareRoute[] = [
   {
@@ -53,16 +59,38 @@ export const vendorProductsMiddlewares: MiddlewareRoute[] = [
     ]
   },
   {
+    method: ['POST'],
+    matcher: '/vendor/products/export',
+    middlewares: []
+  },
+  {
+    method: ['POST'],
+    matcher: '/vendor/products/import',
+    middlewares: [
+      checkConfigurationRule(
+        ConfigurationRuleType.PRODUCT_IMPORT_ENABLED,
+        true
+      ),
+      upload.single('file')
+    ]
+  },
+  {
     method: ['GET'],
     matcher: '/vendor/products/:id',
     middlewares: [
-      checkResourceOwnershipByResourceId({
-        entryPoint: sellerProductLink.entryPoint,
-        filterField: 'product_id'
-      }),
-      validateAndTransformQuery(
-        VendorGetProductParams,
-        vendorProductQueryConfig.retrieve
+      unlessPath(
+        /.*\/products\/(export|import)/,
+        checkResourceOwnershipByResourceId({
+          entryPoint: sellerProductLink.entryPoint,
+          filterField: 'product_id'
+        })
+      ),
+      unlessPath(
+        /.*\/products\/(export|import)/,
+        validateAndTransformQuery(
+          VendorGetProductParams,
+          vendorProductQueryConfig.retrieve
+        )
       )
     ]
   },
@@ -70,14 +98,23 @@ export const vendorProductsMiddlewares: MiddlewareRoute[] = [
     method: ['POST'],
     matcher: '/vendor/products/:id',
     middlewares: [
-      checkResourceOwnershipByResourceId({
-        entryPoint: sellerProductLink.entryPoint,
-        filterField: 'product_id'
-      }),
-      validateAndTransformBody(VendorUpdateProduct),
-      validateAndTransformQuery(
-        VendorGetProductParams,
-        vendorProductQueryConfig.retrieve
+      unlessPath(
+        /.*\/products\/(export|import)/,
+        checkResourceOwnershipByResourceId({
+          entryPoint: sellerProductLink.entryPoint,
+          filterField: 'product_id'
+        })
+      ),
+      unlessPath(
+        /.*\/products\/(export|import)/,
+        validateAndTransformBody(VendorUpdateProduct)
+      ),
+      unlessPath(
+        /.*\/products\/(export|import)/,
+        validateAndTransformQuery(
+          VendorGetProductParams,
+          vendorProductQueryConfig.retrieve
+        )
       )
     ]
   },
@@ -184,6 +221,21 @@ export const vendorProductsMiddlewares: MiddlewareRoute[] = [
         entryPoint: sellerProductLink.entryPoint,
         filterField: 'product_id'
       })
+    ]
+  },
+  {
+    method: ['POST'],
+    matcher: '/vendor/products/:id/status',
+    middlewares: [
+      checkResourceOwnershipByResourceId({
+        entryPoint: sellerProductLink.entryPoint,
+        filterField: 'product_id'
+      }),
+      validateAndTransformBody(VendorUpdateProductStatus),
+      validateAndTransformQuery(
+        VendorGetProductParams,
+        vendorProductQueryConfig.retrieve
+      )
     ]
   }
 ]

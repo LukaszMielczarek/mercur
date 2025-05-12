@@ -1,11 +1,10 @@
-import sellerServiceZoneLink from '#/links/seller-service-zone'
-
 import {
   validateAndTransformBody,
   validateAndTransformQuery
 } from '@medusajs/framework'
 import { MiddlewareRoute } from '@medusajs/medusa'
 
+import sellerServiceZoneLink from '../../../links/seller-service-zone'
 import sellerShippingOptionLink from '../../../links/seller-shipping-option'
 import {
   checkResourceOwnershipByResourceId,
@@ -15,7 +14,7 @@ import { vendorShippingOptionQueryConfig } from './query-config'
 import {
   VendorCreateShippingOption,
   VendorCreateShippingOptionType,
-  VendorGetShippingOptionParams,
+  VendorGetShippingFindParams,
   VendorUpdateShippingOption
 } from './validators'
 
@@ -25,7 +24,7 @@ export const vendorShippingOptionsMiddlewares: MiddlewareRoute[] = [
     matcher: '/vendor/shipping-options',
     middlewares: [
       validateAndTransformQuery(
-        VendorGetShippingOptionParams,
+        VendorGetShippingFindParams,
         vendorShippingOptionQueryConfig.list
       ),
       filterBySellerId()
@@ -42,7 +41,7 @@ export const vendorShippingOptionsMiddlewares: MiddlewareRoute[] = [
         resourceId: (req) => req.validatedBody.service_zone_id
       }),
       validateAndTransformQuery(
-        VendorGetShippingOptionParams,
+        VendorGetShippingFindParams,
         vendorShippingOptionQueryConfig.retrieve
       )
     ]
@@ -56,7 +55,7 @@ export const vendorShippingOptionsMiddlewares: MiddlewareRoute[] = [
         filterField: 'shipping_option_id'
       }),
       validateAndTransformQuery(
-        VendorGetShippingOptionParams,
+        VendorGetShippingFindParams,
         vendorShippingOptionQueryConfig.retrieve
       )
     ]
@@ -71,7 +70,7 @@ export const vendorShippingOptionsMiddlewares: MiddlewareRoute[] = [
       }),
       validateAndTransformBody(VendorUpdateShippingOption),
       validateAndTransformQuery(
-        VendorGetShippingOptionParams,
+        VendorGetShippingFindParams,
         vendorShippingOptionQueryConfig.retrieve
       )
     ]

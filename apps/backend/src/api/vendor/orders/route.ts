@@ -1,11 +1,10 @@
-import sellerOrderLink from '#/links/seller-order'
-import { fetchSellerByAuthActorId } from '#/shared/infra/http/utils'
-
 import { AuthenticatedMedusaRequest, MedusaResponse } from '@medusajs/framework'
 import { OrderDTO } from '@medusajs/framework/types'
 import { ContainerRegistrationKeys } from '@medusajs/framework/utils'
 import { getOrdersListWorkflow } from '@medusajs/medusa/core-flows'
 
+import sellerOrderLink from '../../../links/seller-order'
+import { fetchSellerByAuthActorId } from '../../../shared/infra/http/utils'
 import { VendorGetOrderParamsType } from './validators'
 
 /**
@@ -122,13 +121,13 @@ export const GET = async (
 
   const { result } = await getOrdersListWorkflow(req.scope).run({
     input: {
-      fields: req.remoteQueryConfig.fields,
+      fields: req.queryConfig.fields,
       variables: {
         filters: {
           ...req.filterableFields,
           id: orderRelations.map((relation) => relation.order_id)
         },
-        ...req.remoteQueryConfig.pagination
+        ...req.queryConfig.pagination
       }
     }
   })

@@ -1,7 +1,10 @@
 import { z } from 'zod'
 
-import { ProductStatus } from '@medusajs/framework/utils'
-import { createFindParams } from '@medusajs/medusa/api/utils/validators'
+import { AdditionalData } from '@medusajs/framework/types'
+import {
+  WithAdditionalData,
+  createFindParams
+} from '@medusajs/medusa/api/utils/validators'
 
 import { IdAssociation } from '../../../shared/infra/http/utils'
 
@@ -368,7 +371,7 @@ export const UpdateProductVariant = z
 /* Products */
 
 /**
- * @schema VendorCreateProduct
+ * @schema CreateProduct
  * type: object
  * required:
  *   - title
@@ -408,7 +411,7 @@ export const UpdateProductVariant = z
  *     description: A unique handle to identify the product.
  *   status:
  *     type: string
- *     enum: [draft, proposed, published, rejected]
+ *     enum: [draft, proposed]
  *     description: The status of the product.
  *     default: draft
  *   external_id:
@@ -488,8 +491,9 @@ export const UpdateProductVariant = z
  *         id:
  *           type: string
  */
-export type VendorCreateProductType = z.infer<typeof VendorCreateProduct>
-export const VendorCreateProduct = z
+export type VendorCreateProductType = z.infer<typeof CreateProduct> &
+  AdditionalData
+export const CreateProduct = z
   .object({
     title: z.string(),
     subtitle: z.string().optional(),
@@ -499,10 +503,10 @@ export const VendorCreateProduct = z
     images: z.array(z.object({ url: z.string() })).optional(),
     thumbnail: z.string().optional(),
     handle: z.string().optional(),
-    status: z.nativeEnum(ProductStatus).optional().default(ProductStatus.DRAFT),
+    status: z.enum(['draft', 'proposed']).optional().default('draft'),
     external_id: z.string().optional(),
-    type_id: z.string().nullable(),
-    collection_id: z.string().nullable(),
+    type_id: z.string().optional(),
+    collection_id: z.string().optional(),
     categories: z.array(IdAssociation).max(1).optional(),
     tags: z.array(IdAssociation).optional(),
     options: z.array(CreateProductOption).optional(),
@@ -520,9 +524,23 @@ export const VendorCreateProduct = z
     brand_name: z.string().optional()
   })
   .strict()
+/**
+ * @schema VendorCreateProduct
+ * type: object
+ * allOf:
+ *   - $ref: "#/components/schemas/CreateProduct"
+ *   - type: object
+ *     properties:
+ *      additional_data:
+ *        type: object
+ *        description: Additional data to use in products hooks.
+ *        additionalProperties: true
+ *
+ */
+export const VendorCreateProduct = WithAdditionalData(CreateProduct)
 
 /**
- * @schema VendorUpdateProduct
+ * @schema UpdateProduct
  * type: object
  * properties:
  *   title:
@@ -544,10 +562,6 @@ export const VendorCreateProduct = z
  *     description: The product variants to update.
  *     items:
  *       $ref: "#/components/schemas/UpdateProductVariant"
- *   status:
- *     type: string
- *     enum: [draft, proposed, published, rejected]
- *     description: The status of the product.
  *   subtitle:
  *     type: string
  *     nullable: true
@@ -651,15 +665,15 @@ export const VendorCreateProduct = z
  *         id:
  *           type: string
  */
-export type VendorUpdateProductType = z.infer<typeof VendorUpdateProduct>
-export const VendorUpdateProduct = z
+export type VendorUpdateProductType = z.infer<typeof UpdateProduct> &
+  AdditionalData
+export const UpdateProduct = z
   .object({
     title: z.string().optional(),
     discountable: z.boolean().optional(),
     is_giftcard: z.boolean().optional(),
     options: z.array(UpdateProductOption).optional(),
     variants: z.array(UpdateProductVariant).optional(),
-    status: z.nativeEnum(ProductStatus).optional(),
     subtitle: z.string().nullish(),
     description: z.string().nullish(),
     images: z.array(z.object({ url: z.string() })).optional(),
@@ -682,3 +696,36 @@ export const VendorUpdateProduct = z
     sales_channels: z.array(z.object({ id: z.string() })).optional()
   })
   .strict()
+
+/**
+ * @schema VendorUpdateProduct
+ * type: object
+ * allOf:
+ *   - $ref: "#/components/schemas/UpdateProduct"
+ *   - type: object
+ *     properties:
+ *      additional_data:
+ *        type: object
+ *        description: Additional data to use in products hooks.
+ *        additionalProperties: true
+ *
+ */
+export const VendorUpdateProduct = WithAdditionalData(UpdateProduct)
+
+/**
+ * @schema VendorUpdateProductStatus
+ * type: object
+ * required:
+ *   - title
+ * properties:
+ *   status:
+ *     type: string
+ *     enum: [draft, proposed, published]
+ *     description: The status of the product.
+ */
+export type VendorUpdateProductStatusType = z.infer<
+  typeof VendorUpdateProductStatus
+>
+export const VendorUpdateProductStatus = z.object({
+  status: z.enum(['draft', 'proposed', 'published'])
+})

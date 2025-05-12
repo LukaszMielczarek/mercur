@@ -66,9 +66,9 @@ export const GET = async (
 
   const { data: campaigns, metadata } = await query.graph({
     entity: sellerCampaign.entryPoint,
-    fields: req.remoteQueryConfig.fields.map((field) => `campaign.${field}`),
+    fields: req.queryConfig.fields.map((field) => `campaign.${field}`),
     filters: req.filterableFields,
-    pagination: req.remoteQueryConfig.pagination
+    pagination: req.queryConfig.pagination
   })
 
   res.json({
@@ -125,14 +125,14 @@ export const POST = async (
 
   const { result } = await createVendorCampaignWorkflow.run({
     container: req.scope,
-    input: { promotion: req.validatedBody, seller_id: seller.id }
+    input: { campaign: req.validatedBody, seller_id: seller.id }
   })
 
   const {
     data: [campaign]
   } = await query.graph({
     entity: 'campaign',
-    fields: req.remoteQueryConfig.fields,
+    fields: req.queryConfig.fields,
     filters: {
       id: result[0].id
     }

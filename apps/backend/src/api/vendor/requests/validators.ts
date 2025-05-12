@@ -2,8 +2,6 @@ import { z } from 'zod'
 
 import { createFindParams } from '@medusajs/medusa/api/utils/validators'
 
-import { VendorCreateProduct } from '../products/validators'
-
 export type VendorGetRequestsParamsType = z.infer<
   typeof VendorGetRequestsParams
 >
@@ -17,7 +15,8 @@ export const VendorGetRequestsParams = createFindParams({
       'product_category',
       'product',
       'review_remove',
-      'product_type'
+      'product_type',
+      'product_tag'
     ])
     .optional(),
   status: z.enum(['accepted', 'rejected', 'pending']).optional()
@@ -56,7 +55,7 @@ const ProductCategoryRequest = z.object({
     name: z.string(),
     handle: z.string(),
     description: z.string().optional(),
-    parent_category_id: z.string().nullable()
+    parent_category_id: z.string().nullable().default(null)
   })
 })
 
@@ -87,25 +86,6 @@ const ProductCollectionRequest = z.object({
     title: z.string(),
     handle: z.string()
   })
-})
-
-/**
- * @schema ProductRequest
- * type: object
- * required:
- *   - type
- *   - data
- * properties:
- *   type:
- *     type: string
- *     description: The type of the request
- *     enum: [product]
- *   data:
- *     $ref: "#/components/schemas/VendorCreateProduct"
- */
-const ProductRequest = z.object({
-  type: z.literal('product'),
-  data: VendorCreateProduct
 })
 
 /**
@@ -167,6 +147,35 @@ const ProductTypeRequest = z.object({
 })
 
 /**
+ * @schema ProductTagRequest
+ * type: object
+ * required:
+ *   - type
+ *   - data
+ * properties:
+ *   type:
+ *     type: string
+ *     description: The type of the request
+ *     enum: [product_tag]
+ *   data:
+ *     type: object
+ *     properties:
+ *       value:
+ *         type: string
+ *         description: The product tag value
+ *       metadata:
+ *         type: object
+ *         description: The product tag metadata
+ */
+const ProductTagRequest = z.object({
+  type: z.literal('product_tag'),
+  data: z.object({
+    value: z.string(),
+    metadata: z.record(z.unknown()).nullish()
+  })
+})
+
+/**
  * @schema VendorCreateRequest
  * type: object
  * required:
@@ -176,18 +185,74 @@ const ProductTypeRequest = z.object({
  *     type: object
  *     description: The resource to be created by request
  *     oneOf:
- *       - $ref: "#/components/schemas/ProductRequest"
  *       - $ref: "#/components/schemas/ProductCollectionRequest"
  *       - $ref: "#/components/schemas/ProductCategoryRequest"
  *       - $ref: "#/components/schemas/ReviewRemoveRequest"
+ *       - $ref: "#/components/schemas/ProductTypeRequest"
+ *       - $ref: "#/components/schemas/ProductTagRequest"
  */
 export type VendorCreateRequestType = z.infer<typeof VendorCreateRequest>
 export const VendorCreateRequest = z.object({
   request: z.discriminatedUnion('type', [
     ProductCategoryRequest,
     ProductCollectionRequest,
-    ProductRequest,
     ReviewRemoveRequest,
-    ProductTypeRequest
+    ProductTypeRequest,
+    ProductTagRequest
+  ])
+})
+
+const UpdateProductCollectionRequest = z.object({
+  type: z.literal('product_collection'),
+  data: z.object({
+    title: z.string().optional(),
+    handle: z.string().optional()
+  })
+})
+
+const UpdateReviewRemoveRequest = z.object({
+  type: z.literal('review_remove'),
+  data: z.object({
+    review_id: z.string().optional(),
+    reason: z.string().optional()
+  })
+})
+
+const UpdateProductCategoryRequest = z.object({
+  type: z.literal('product_category'),
+  data: z.object({
+    name: z.string().optional(),
+    handle: z.string().optional(),
+    description: z.string().optional(),
+    parent_category_id: z.string().nullable().optional()
+  })
+})
+
+/**
+ * @schema VendorUpdateRequestData
+ * type: object
+ * required:
+ *   - request
+ * properties:
+ *   request:
+ *     type: object
+ *     description: The resource to be updated
+ *     oneOf:
+ *       - $ref: "#/components/schemas/ProductCollectionRequest"
+ *       - $ref: "#/components/schemas/ProductCategoryRequest"
+ *       - $ref: "#/components/schemas/ReviewRemoveRequest"
+ *       - $ref: "#/components/schemas/ProductTypeRequest"
+ *       - $ref: "#/components/schemas/ProductTagRequest"
+ */
+export type VendorUpdateRequestDataType = z.infer<
+  typeof VendorUpdateRequestData
+>
+export const VendorUpdateRequestData = z.object({
+  request: z.discriminatedUnion('type', [
+    UpdateProductCategoryRequest,
+    UpdateProductCollectionRequest,
+    UpdateReviewRemoveRequest,
+    ProductTypeRequest,
+    ProductTagRequest
   ])
 })

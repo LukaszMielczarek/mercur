@@ -1,12 +1,12 @@
-import sellerProductLink from '#/links/seller-product'
-import sellerShippingOptionLink from '#/links/seller-shipping-option'
-
 import {
   ContainerRegistrationKeys,
   MedusaError,
   promiseAll
 } from '@medusajs/framework/utils'
 import { StepResponse, createStep } from '@medusajs/framework/workflows-sdk'
+
+import sellerProductLink from '../../../links/seller-product'
+import sellerShippingOptionLink from '../../../links/seller-shipping-option'
 
 type ValidateCartShippingOptionsInput = {
   cart_id: string
@@ -17,6 +17,13 @@ export const validateCartShippingOptionsStep = createStep(
   'validate-cart-shipping-options',
   async (input: ValidateCartShippingOptionsInput, { container }) => {
     const query = container.resolve(ContainerRegistrationKeys.QUERY)
+
+    if (input.option_ids.length !== new Set(input.option_ids).size) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        'Some of the shipping methods are doubled!'
+      )
+    }
 
     const {
       data: [cart]

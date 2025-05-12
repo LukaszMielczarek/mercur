@@ -23,6 +23,7 @@ module.exports = defineConfig({
     { resolve: './src/modules/requests' },
     { resolve: './src/modules/reviews' },
     { resolve: './src/modules/brand' },
+    { resolve: './src/modules/wishlist' },
     {
       resolve: './src/modules/taxcode',
       options: {
@@ -83,6 +84,13 @@ module.exports = defineConfig({
               channels: ['email'],
               api_key: process.env.RESEND_API_KEY,
               from: process.env.RESEND_FROM_EMAIL
+            }
+          },
+          {
+            resolve: '@medusajs/medusa/notification-local',
+            id: 'local',
+            options: {
+              channels: ['feed']
             }
           }
         ]

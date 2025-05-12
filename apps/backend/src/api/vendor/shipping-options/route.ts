@@ -1,12 +1,14 @@
-import sellerShippingOption from '#/links/seller-shipping-option'
-
 import { AuthenticatedMedusaRequest, MedusaResponse } from '@medusajs/framework'
 import { ContainerRegistrationKeys, Modules } from '@medusajs/framework/utils'
 import { createShippingOptionsWorkflow } from '@medusajs/medusa/core-flows'
 
+import sellerShippingOption from '../../../links/seller-shipping-option'
 import { SELLER_MODULE } from '../../../modules/seller'
 import { fetchSellerByAuthActorId } from '../../../shared/infra/http/utils'
-import { VendorCreateShippingOptionType } from './validators'
+import {
+  VendorCreateShippingOptionType,
+  VendorGetShippingParamsType
+} from './validators'
 
 /**
  * @oas [post] /vendor/shipping-options
@@ -71,7 +73,7 @@ export const POST = async (
   } = await query.graph(
     {
       entity: 'shipping_option',
-      fields: req.remoteQueryConfig.fields,
+      fields: req.queryConfig.fields,
       filters: { id: result[0].id }
     },
     { throwIfKeyNotFound: true }
@@ -114,18 +116,16 @@ export const POST = async (
  *   - cookie_auth: []
  */
 export const GET = async (
-  req: AuthenticatedMedusaRequest,
+  req: AuthenticatedMedusaRequest<VendorGetShippingParamsType>,
   res: MedusaResponse
 ) => {
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   const { data: sellerShippingOptions, metadata } = await query.graph({
     entity: sellerShippingOption.entryPoint,
-    fields: req.remoteQueryConfig.fields.map(
-      (field) => `shipping_option.${field}`
-    ),
+    fields: req.queryConfig.fields.map((field) => `shipping_option.${field}`),
     filters: req.filterableFields,
-    pagination: req.remoteQueryConfig.pagination
+    pagination: req.queryConfig.pagination
   })
 
   res.json({

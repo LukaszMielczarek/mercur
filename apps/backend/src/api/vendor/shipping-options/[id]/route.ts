@@ -47,7 +47,7 @@ export const GET = async (
   } = await query.graph(
     {
       entity: 'shipping_option',
-      fields: req.remoteQueryConfig.fields,
+      fields: req.queryConfig.fields,
       filters: { id: req.params.id }
     },
     { throwIfKeyNotFound: true }
@@ -97,7 +97,7 @@ export const POST = async (
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   await updateShippingOptionsWorkflow(req.scope).run({
-    input: [{ id: req.params.option_id, ...req.validatedBody }]
+    input: [{ id: req.params.id, ...req.validatedBody }]
   })
 
   const {
@@ -105,7 +105,7 @@ export const POST = async (
   } = await query.graph(
     {
       entity: 'shipping_option',
-      fields: req.remoteQueryConfig.fields,
+      fields: req.queryConfig.fields,
       filters: { id: req.params.id }
     },
     { throwIfKeyNotFound: true }
@@ -156,12 +156,12 @@ export const DELETE = async (
   req: AuthenticatedMedusaRequest,
   res: MedusaResponse
 ) => {
-  const { option_id } = req.params
+  const { id } = req.params
   await deleteShippingOptionsWorkflow(req.scope).run({
     input: {
-      ids: [option_id]
+      ids: [id]
     }
   })
 
-  res.json({ id: option_id, object: 'shipping_option', deleted: true })
+  res.json({ id, object: 'shipping_option', deleted: true })
 }

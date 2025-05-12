@@ -1,10 +1,9 @@
-import { SELLER_MODULE } from 'src/modules/seller'
-import { fetchSellerByAuthActorId } from 'src/shared/infra/http/utils'
-
 import { AuthenticatedMedusaRequest, MedusaResponse } from '@medusajs/framework'
 import { ContainerRegistrationKeys, Modules } from '@medusajs/framework/utils'
 import { createServiceZonesWorkflow } from '@medusajs/medusa/core-flows'
 
+import { SELLER_MODULE } from '../../../../../modules/seller'
+import { fetchSellerByAuthActorId } from '../../../../../shared/infra/http/utils'
 import { VendorCreateServiceZoneType } from '../../validators'
 
 /**
@@ -75,7 +74,7 @@ export const POST = async (
   } = await query.graph(
     {
       entity: 'fulfillment_set',
-      fields: req.remoteQueryConfig.fields,
+      fields: req.queryConfig.fields,
       filters: {
         id: req.params.id
       }

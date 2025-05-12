@@ -11,6 +11,7 @@ export const createCommissionLinesStep = createStep(
       COMMISSION_MODULE
     ) as CommissionModuleService
 
+    // @ts-expect-error BigNumber incompatible interface
     const result = await service.createCommissionLines(input)
 
     return new StepResponse(result)

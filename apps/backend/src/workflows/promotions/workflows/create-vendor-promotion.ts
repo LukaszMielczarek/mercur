@@ -1,4 +1,4 @@
-import { CreatePromotionDTO } from '@medusajs/framework/types'
+import { CreatePromotionDTO, LinkDefinition } from '@medusajs/framework/types'
 import { Modules } from '@medusajs/framework/utils'
 import {
   createPromotionsWorkflow,
@@ -12,12 +12,19 @@ import {
 
 import { SELLER_MODULE } from '../../../modules/seller'
 import { verifyVendorCampaignStep, verifyVendorPromotionStep } from '../steps'
+import { verifyVendorTargetPromotionRulesStep } from '../steps/verify-vendor-target-promotion-rules'
 
 export const createVendorPromotionWorkflow = createWorkflow(
   'create-vendor-promotion',
   function (input: { promotion: CreatePromotionDTO; seller_id: string }) {
     verifyVendorCampaignStep(input)
     verifyVendorPromotionStep(input)
+    verifyVendorTargetPromotionRulesStep(
+      transform(input, (input) => ({
+        rules: input.promotion.application_method.target_rules,
+        seller_id: input.seller_id
+      }))
+    )
 
     const promotions = createPromotionsWorkflow.runAsStep({
       input: {
@@ -25,18 +32,31 @@ export const createVendorPromotionWorkflow = createWorkflow(
       }
     })
 
-    const links = transform({ input, promotions }, ({ input, promotions }) =>
-      promotions.map((p) => {
-        return {
+    const links = transform({ input, promotions }, ({ input, promotions }) => {
+      const promo = promotions[0]
+      const link: LinkDefinition[] = [
+        {
           [SELLER_MODULE]: {
             seller_id: input.seller_id
           },
           [Modules.PROMOTION]: {
-            promotion_id: p.id
+            promotion_id: promo.id
           }
         }
-      })
-    )
+      ]
+
+      if (promo.campaign) {
+        link.push({
+          [SELLER_MODULE]: {
+            seller_id: input.seller_id
+          },
+          [Modules.PROMOTION]: {
+            campaign_id: promo.campaign.id
+          }
+        })
+      }
+      return link
+    })
 
     createRemoteLinkStep(links)
     return new WorkflowResponse(promotions)
